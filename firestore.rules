@@ -1,0 +1,66 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // admin_users/{uid} docs are provisioned only via the Admin SDK
+    // (scripts/create-admin.ts) — never writable from the client SDK.
+    function isActiveAdmin() {
+      return isSignedIn() &&
+        exists(/databases/$(database)/documents/admin_users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/admin_users/$(request.auth.uid)).data.active == true;
+    }
+
+    // ---- site_settings/{general|home|seo} ----------------------------------
+    match /site_settings/{docId} {
+      allow read: if true;
+      allow write: if isActiveAdmin();
+    }
+
+    // ---- news/{id}, cases/{id}, properties/{id} ----------------------------
+    // Public read only for published items; full CRUD for active admins.
+    match /news/{id} {
+      allow read: if resource.data.status == 'published' || isActiveAdmin();
+      allow create, update, delete: if isActiveAdmin();
+    }
+
+    match /cases/{id} {
+      allow read: if resource.data.status == 'published' || isActiveAdmin();
+      allow create, update, delete: if isActiveAdmin();
+    }
+
+    match /properties/{id} {
+      allow read: if resource.data.status == 'published' || isActiveAdmin();
+      allow create, update, delete: if isActiveAdmin();
+    }
+
+    // ---- form_submissions/{id} ----------------------------------------------
+    // Visitors may only ever create a submission (never list/read/update/delete
+    // someone else's) — this is the "public can create, never read" rule the
+    // spec requires. Field shape is validated here so a malformed/oversized
+    // payload never even bypasses the anti-spam checks on the client.
+    match /form_submissions/{id} {
+      allow read, update, delete: if isActiveAdmin();
+      allow create: if
+        request.resource.data.keys().hasOnly([
+          'company', 'name', 'email', 'phone', 'type', 'message',
+          'propertySlug', 'consent', 'status', 'createdAt', 'updatedAt'
+        ]) &&
+        request.resource.data.name is string && request.resource.data.name.size() > 0 && request.resource.data.name.size() < 200 &&
+        request.resource.data.email is string && request.resource.data.email.size() > 0 && request.resource.data.email.size() < 200 &&
+        request.resource.data.message is string && request.resource.data.message.size() > 0 && request.resource.data.message.size() < 5000 &&
+        request.resource.data.consent == true &&
+        request.resource.data.status == 'new';
+    }
+
+    // ---- admin_users/{uid} ---------------------------------------------------
+    match /admin_users/{uid} {
+      allow read: if isSignedIn() && (request.auth.uid == uid || isActiveAdmin());
+      allow write: if false; // provisioned only via Admin SDK (scripts/create-admin.ts)
+    }
+  }
+}

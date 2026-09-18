@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 500" width="1000" height="500">
+  <defs>
+    <style>
+      .txt {
+        font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+        font-weight: 800;
+        font-size: 106px;
+        letter-spacing: -1px;
+        fill: #ffffff;
+      }
+    </style>
+  </defs>
+
+  <!-- Chimney -->
+  <rect x="585" y="110" width="90" height="180" fill="#ffffff" rx="6" />
+
+  <!-- Main House Roof Gable -->
+  <path d="M 40 410 L 415 70 L 790 410" 
+        fill="none" 
+        stroke="#ffffff" 
+        stroke-width="32" 
+        stroke-linecap="round" 
+        stroke-linejoin="round" />
+
+  <!-- Magnifying Glass Ring -->
+  <circle cx="410" cy="285" r="95" 
+          fill="none" 
+          stroke="#ffffff" 
+          stroke-width="22" />
+
+  <!-- Magnifying Glass Handle -->
+  <path d="M 477 352 L 535 412" 
+        fill="none" 
+        stroke="#ffffff" 
+        stroke-width="24" 
+        stroke-linecap="round" />
+
+  <!-- Handle Grip detail -->
+  <path d="M 472 347 L 488 363" 
+        fill="none" 
+        stroke="#ffffff" 
+        stroke-width="12" 
+        stroke-linecap="round" />
+
+  <!-- Inner House Roof inside Glass -->
+  <path d="M 345 272 L 410 215 L 475 272" 
+        fill="none" 
+        stroke="#ffffff" 
+        stroke-width="15" 
+        stroke-linecap="round" 
+        stroke-linejoin="round" />
+
+  <!-- Inner House Body -->
+  <rect x="365" y="272" width="90" height="68" fill="#ffffff" rx="2" />
+
+  <!-- 4-Pane Window (negative space cutouts) -->
+  <!-- Top Left -->
+  <rect x="377" y="282" width="28" height="22" fill="#000000" rx="1" />
+  <!-- Top Right -->
+  <rect x="415" y="282" width="28" height="22" fill="#000000" rx="1" />
+  <!-- Bottom Left -->
+  <rect x="377" y="310" width="28" height="22" fill="#000000" rx="1" />
+  <!-- Bottom Right -->
+  <rect x="415" y="310" width="28" height="22" fill="#000000" rx="1" />
+
+  <!-- Yellow House Text -->
+  <text x="65" y="475" class="txt">Yellow House</text>
+</svg>

@@ -1,0 +1,6 @@
+{
+  "name": "Yellow House Company",
+  "description": "Yellow House Company Corporate Website",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

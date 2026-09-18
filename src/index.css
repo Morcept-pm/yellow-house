@@ -1,0 +1,246 @@
+@import "tailwindcss";
+
+@theme {
+  /* Warm near-black rather than pure #000 — reads softer against the bright
+     surfaces without losing contrast (still ~17:1 on white). */
+  --color-tertiary: #15120e;
+  --color-surface-container-low: #f3f3f4;
+  --color-surface-tint: #5f5e5e;
+  --color-error: #ba1a1a;
+  --color-surface-container-lowest: #ffffff;
+  --color-secondary-container: #e1dfdb;
+  --color-primary: #15120e;
+  --color-primary-fixed: #e5e2e1;
+  --color-tertiary-container: #2a1800;
+  --color-on-secondary-container: #63635f;
+  --color-on-tertiary-container: #b77600;
+  --color-surface-container: #eeeeee;
+  --color-surface-dim: #dadada;
+  --color-background: #ffffff;
+  --color-on-primary-fixed-variant: #474646;
+  --color-tertiary-fixed: #ffddb6;
+  --color-on-secondary-fixed-variant: #474744;
+  --color-on-primary: #ffffff;
+  --color-surface-variant: #e2e2e2;
+  --color-secondary: #5e5e5b;
+  --color-on-error-container: #93000a;
+  --color-outline-variant: #c4c7c7;
+  --color-surface-container-highest: #e2e2e2;
+  --color-secondary-fixed-dim: #c8c6c2;
+  --color-error-container: #ffdad6;
+  --color-tertiary-fixed-dim: #ffb95b;
+  --color-on-primary-fixed: #1c1b1b;
+  --color-surface-container-high: #e8e8e8;
+  --color-inverse-primary: #c9c6c5;
+  --color-inverse-on-surface: #f0f1f1;
+  --color-on-primary-container: #858383;
+  --color-surface-bright: #ffffff;
+  --color-surface: #ffffff;
+  --color-primary-fixed-dim: #c9c6c5;
+  --color-on-secondary-fixed: #1b1c19;
+  --color-on-background: #1a1c1c;
+  --color-on-secondary: #ffffff;
+  --color-outline: #747878;
+  --color-on-error: #ffffff;
+  --color-on-tertiary: #ffffff;
+  --color-primary-container: #1c1b1b;
+  --color-on-tertiary-fixed: #2a1800;
+  --color-secondary-fixed: #e4e2dd;
+  --color-on-tertiary-fixed-variant: #643f00;
+  --color-on-surface-variant: #444748;
+  --color-inverse-surface: #2f3131;
+  --color-on-surface: #1a1c1c;
+
+  /* Section rhythm. `section-gap` (120px) is the legacy value still used by
+     the inner pages; `section` is the tighter rhythm the redesigned,
+     image-dense sections use. */
+  --spacing-section: 88px;
+  --spacing-section-lg: 120px;
+
+  --spacing-gutter: 24px;
+  --spacing-margin-mobile: 20px;
+  --spacing-container-max: 1440px;
+  --spacing-unit: 8px;
+  --spacing-section-gap: 120px;
+  --spacing-margin-desktop: 64px;
+
+  --font-display-lg: "Noto Sans", "Noto Sans JP", "Noto Sans TC", sans-serif;
+  --font-headline-lg: "Noto Sans", "Noto Sans JP", "Noto Sans TC", sans-serif;
+  --font-body-lg: "Noto Sans", "Noto Sans JP", "Noto Sans TC", sans-serif;
+  --font-headline-lg-mobile: "Noto Sans", "Noto Sans JP", "Noto Sans TC", sans-serif;
+  --font-body-md: "Noto Sans", "Noto Sans JP", "Noto Sans TC", sans-serif;
+  --font-label-caps: "Noto Sans", "Noto Sans JP", "Noto Sans TC", sans-serif;
+  --font-display-lg-mobile: "Noto Sans", "Noto Sans JP", "Noto Sans TC", sans-serif;
+  --font-numeral-display: "Noto Sans", "Noto Sans JP", "Noto Sans TC", sans-serif;
+  --font-headline-md: "Noto Sans", "Noto Sans JP", "Noto Sans TC", sans-serif;
+
+  /* ------------------------------------------------------------------ *
+   * Brand — Yellow House logo orange.
+   * Source of truth: the logo artwork (CMYK C2 M43.4 Y90.5 K0), which
+   * colour-manages to #F4A519. The old hard-coded #FFA601 scattered across
+   * the pages was close but not the real brand colour; new work uses these
+   * tokens so there is one place to change it.
+   * ------------------------------------------------------------------ */
+  --color-brand-50: #fef8ed;
+  --color-brand-100: #fdedd2;
+  --color-brand-200: #fbd9a0;
+  --color-brand-300: #f8c26c;
+  --color-brand-400: #f6b342;
+  --color-brand-500: #f4a519;
+  --color-brand-600: #d98b0d;
+  --color-brand-700: #ad6a0e;
+  --color-brand-800: #855213;
+  --color-brand-900: #5c390e;
+
+  /* Bright, warm neutral bands — the light counterpart to the brand orange.
+     Sections alternate surface ↔ surface-warm instead of white ↔ black. */
+  --color-surface-warm: #faf6ef;
+  --color-surface-warm-deep: #f3ece0;
+
+  --color-brand-tint: #fff6e9;
+  --color-brand-tint-deep: #fdecd2;
+
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --radius-xl: 12px;
+  --radius-2xl: 14px;
+
+  /* H1 — desktop 56px/1.18, mobile 36px/1.22 (see -mobile variant below) */
+  --text-display-lg: 56px;
+  --text-display-lg--line-height: 66px;
+  --text-display-lg--letter-spacing: -0.01em;
+  --text-display-lg--font-weight: 700;
+
+  /* H2 — desktop 40px/1.25 */
+  --text-headline-lg: 40px;
+  --text-headline-lg--line-height: 50px;
+  --text-headline-lg--font-weight: 600;
+
+  /* Body (large) — 18px/1.72 */
+  --text-body-lg: 18px;
+  --text-body-lg--line-height: 31px;
+  --text-body-lg--font-weight: 400;
+
+  /* H2 mobile — 30px/1.27 */
+  --text-headline-lg-mobile: 30px;
+  --text-headline-lg-mobile--line-height: 38px;
+  --text-headline-lg-mobile--font-weight: 600;
+
+  /* Body (default) — 16px/1.75 */
+  --text-body-md: 16px;
+  --text-body-md--line-height: 28px;
+  --text-body-md--font-weight: 400;
+
+  /* Small text / label / nav / button — 13px/1.54 */
+  --text-label-caps: 13px;
+  --text-label-caps--line-height: 20px;
+  --text-label-caps--letter-spacing: 0.08em;
+  --text-label-caps--font-weight: 600;
+
+  /* H1 mobile — 36px/1.22 */
+  --text-display-lg-mobile: 36px;
+  --text-display-lg-mobile--line-height: 44px;
+  --text-display-lg-mobile--letter-spacing: -0.005em;
+  --text-display-lg-mobile--font-weight: 700;
+
+  --text-numeral-display: 24px;
+  --text-numeral-display--line-height: 28px;
+  --text-numeral-display--font-weight: 600;
+
+  /* H3 — 28px/1.36 (used at both breakpoints; no dedicated mobile token) */
+  --text-headline-md: 28px;
+  --text-headline-md--line-height: 38px;
+  --text-headline-md--font-weight: 600;
+
+  --leading-relaxed: 1.75;
+}
+
+@layer base {
+  html,body { margin: 0; padding: 0; }
+  body { overscroll-behavior: none; background-color: var(--color-background); color: var(--color-on-surface); font-family: var(--font-body-md); }
+  main > :first-child { margin-top: 0 !important; }
+  main > :last-child { margin-bottom: 0 !important; }
+  ::-webkit-scrollbar { display: none; }
+  /* The fixed header overlays the page, so in-page anchors need clearance. */
+  :target { scroll-margin-top: 96px; }
+}
+
+@keyframes float-y {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes kenburns {
+  0%   { transform: scale(1.06) translate3d(0, 0, 0); }
+  100% { transform: scale(1.16) translate3d(0, -1.5%, 0); }
+}
+
+@keyframes scroll-cue {
+  0%        { transform: scaleY(0); transform-origin: top; }
+  45%       { transform: scaleY(1); transform-origin: top; }
+  55%       { transform: scaleY(1); transform-origin: bottom; }
+  100%      { transform: scaleY(0); transform-origin: bottom; }
+}
+
+@layer utilities {
+  /* Type set directly on photography. Two shadows: a wide soft one to lift the
+     glyphs off a busy background, and a tight one to keep edges crisp. */
+  /* Layered so the shadow acts as a halo hugging the glyphs: a tight dark
+     edge for crispness plus wide soft falloff that darkens only the pixels
+     immediately around the type, instead of dimming the whole banner. */
+  .text-shadow-hero {
+    text-shadow:
+      0 1px 2px rgba(0, 0, 0, 0.6),
+      0 2px 10px rgba(0, 0, 0, 0.55),
+      0 4px 32px rgba(0, 0, 0, 0.45);
+  }
+  /* Content column: full-bleed sections keep their edge-to-edge background
+     while the text inside stays readable on ultrawide screens. Replaces the
+     old pattern of letting every section stretch to the viewport. */
+  .content-col {
+    width: 100%;
+    max-width: var(--spacing-container-max);
+    margin-inline: auto;
+  }
+  /* Escape a padded parent back out to the full viewport width. */
+  .full-bleed {
+    width: 100vw;
+    margin-inline: calc(50% - 50vw);
+  }
+  .animate-kenburns {
+    animation: kenburns 9s ease-out forwards;
+  }
+  .animate-scroll-cue {
+    animation: scroll-cue 2.4s cubic-bezier(0.76, 0, 0.24, 1) infinite;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .animate-float {
+    animation: float-y 5s ease-in-out infinite;
+  }
+  .animate-float-slow {
+    animation: float-y 6.5s ease-in-out infinite;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .animate-float,
+  .animate-float-slow,
+  .animate-kenburns,
+  .animate-scroll-cue {
+    animation: none !important;
+  }
+  .animate-kenburns { transform: scale(1.02); }
+}

@@ -1,0 +1,28 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isActiveAdmin() {
+      return isSignedIn() &&
+        firestore.exists(/databases/(default)/documents/admin_users/$(request.auth.uid)) &&
+        firestore.get(/databases/(default)/documents/admin_users/$(request.auth.uid)).data.active == true;
+    }
+
+    function isValidImage() {
+      return request.resource.size < 8 * 1024 * 1024 &&
+        request.resource.contentType.matches('image/(jpeg|png|webp)');
+    }
+
+    // Public read (images are shown on the public site); only active admins
+    // may upload/replace/delete, and only valid image files under the size cap.
+    match /{allPaths=**} {
+      allow read: if true;
+      allow write: if isActiveAdmin() && isValidImage();
+    }
+  }
+}
