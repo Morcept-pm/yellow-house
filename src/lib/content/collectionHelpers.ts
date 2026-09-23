@@ -71,12 +71,18 @@ export async function deleteDocById(collectionName: string, id: string): Promise
 /**
  * Wraps a public-facing read with a bundled fallback value, so a broken or
  * unconfigured Firebase connection still renders demo content instead of an
- * empty section. Only triggers on a thrown error — a successful read that's
+ * empty section. Triggers on a thrown error, but also on a read that's still
+ * pending after `timeoutMs` — a bad project id/API key doesn't reject the
+ * Firestore SDK's call, it retries the realtime channel forever, so a plain
+ * try/catch never sees a rejection to catch. A successful read that's
  * genuinely empty (no published docs yet) is left as-is.
  */
-export async function withFallback<T>(read: () => Promise<T>, fallback: T): Promise<T> {
+export async function withFallback<T>(read: () => Promise<T>, fallback: T, timeoutMs = 6000): Promise<T> {
   try {
-    return await read();
+    return await Promise.race([
+      read(),
+      new Promise<T>((_, reject) => setTimeout(() => reject(new Error("Firestore read timed out")), timeoutMs)),
+    ]);
   } catch {
     return fallback;
   }
