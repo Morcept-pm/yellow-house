@@ -5,12 +5,12 @@
       "name": "vite-dev",
       "runtimeExecutable": "node",
       "runtimeArgs": [
-        "/Users/jcchen/Downloads/yellow-house-site-main/node_modules/vite/bin/vite.js",
-        "/Users/jcchen/Downloads/yellow-house-site-main",
-        "--port=3000",
+        "/Users/jcchen/yellow-house-site-main/node_modules/vite/bin/vite.js",
+        "/Users/jcchen/yellow-house-site-main",
         "--host=127.0.0.1"
       ],
-      "port": 3000
+      "port": 3000,
+      "autoPort": true
     }
   ]
 }
