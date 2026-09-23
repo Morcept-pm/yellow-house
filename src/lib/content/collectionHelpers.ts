@@ -77,7 +77,7 @@ export async function deleteDocById(collectionName: string, id: string): Promise
  * try/catch never sees a rejection to catch. A successful read that's
  * genuinely empty (no published docs yet) is left as-is.
  */
-export async function withFallback<T>(read: () => Promise<T>, fallback: T, timeoutMs = 6000): Promise<T> {
+export async function withFallback<T>(read: () => Promise<T>, fallback: T, timeoutMs = 2500): Promise<T> {
   try {
     return await Promise.race([
       read(),
