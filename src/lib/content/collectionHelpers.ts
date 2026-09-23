@@ -68,6 +68,20 @@ export async function deleteDocById(collectionName: string, id: string): Promise
   await deleteDoc(doc(db, collectionName, id));
 }
 
+/**
+ * Wraps a public-facing read with a bundled fallback value, so a broken or
+ * unconfigured Firebase connection still renders demo content instead of an
+ * empty section. Only triggers on a thrown error — a successful read that's
+ * genuinely empty (no published docs yet) is left as-is.
+ */
+export async function withFallback<T>(read: () => Promise<T>, fallback: T): Promise<T> {
+  try {
+    return await read();
+  } catch {
+    return fallback;
+  }
+}
+
 /** Checks whether `slug` is already used by another document in the collection. */
 export async function slugExists(collectionName: string, slug: string, excludeId?: string): Promise<boolean> {
   const q = query(collection(db, collectionName), where("slug", "==", slug));

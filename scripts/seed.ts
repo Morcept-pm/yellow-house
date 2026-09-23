@@ -12,6 +12,7 @@ import { FieldValue } from "firebase-admin/firestore";
 import { adminDb } from "./firebaseAdmin";
 import { NEWS_DATA } from "../src/data/newsData";
 import { CASES_DATA } from "../src/data/casesData";
+import { PROPERTIES_DATA } from "../src/data/propertiesData";
 
 const DEFAULT_GENERAL = {
   companyNameZh: "株式会社イエローハウスカンパニー\n(YELLOW HOUSE COMPANY)",
@@ -62,64 +63,6 @@ const DEFAULT_SEO = {
   pages: {},
 };
 
-const DEMO_PROPERTIES = [
-  {
-    id: "demo-setagaya-residence",
-    slug: "demo-setagaya-residence",
-    category: "residential",
-    listingStatus: "available",
-    titleZh: "【示範資料】世田谷區三層透天住宅",
-    titleEn: "[Demo] Setagaya 3-Story Detached House",
-    titleJp: "【デモ】世田谷区 3階建て一戸建て",
-    summaryZh: "這是示範用的物件資料，請於後台編輯或刪除後換上真實物件。",
-    summaryEn: "This is placeholder demo data — edit or delete it from /admin and replace with a real listing.",
-    summaryJp: "これはデモ用のサンプルデータです。管理画面から編集または削除し、実際の物件情報に差し替えてください。",
-    descriptionZh: "示範說明文字：可描述屋況、周邊生活機能、交通等資訊。",
-    descriptionEn: "Placeholder description: describe condition, neighborhood amenities, transit access, etc.",
-    descriptionJp: "デモ用の説明文：建物の状態、周辺環境、交通アクセスなどを記載します。",
-    locationZh: "東京都世田谷區",
-    locationEn: "Setagaya-ku, Tokyo",
-    locationJp: "東京都世田谷区",
-    priceJPY: 98000000,
-    layout: "4LDK",
-    landAreaSqm: 120,
-    floorAreaSqm: 145,
-    buildYear: "2018",
-    coverImage: "https://images.unsplash.com/photo-1568605114967-8130f3a36994?auto=format&fit=crop&w=1600&q=85",
-    gallery: [
-      "https://images.unsplash.com/photo-1568605114967-8130f3a36994?auto=format&fit=crop&w=1600&q=85",
-      "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1600&q=85",
-    ],
-    sortOrder: 1,
-  },
-  {
-    id: "demo-yokohama-condo",
-    slug: "demo-yokohama-condo",
-    category: "residential",
-    listingStatus: "negotiating",
-    titleZh: "【示範資料】橫濱港景公寓",
-    titleEn: "[Demo] Yokohama Bay View Condominium",
-    titleJp: "【デモ】横浜 ベイビュー マンション",
-    summaryZh: "這是示範用的物件資料，請於後台編輯或刪除後換上真實物件。",
-    summaryEn: "This is placeholder demo data — edit or delete it from /admin and replace with a real listing.",
-    summaryJp: "これはデモ用のサンプルデータです。管理画面から編集または削除し、実際の物件情報に差し替えてください。",
-    descriptionZh: "示範說明文字：可描述屋況、周邊生活機能、交通等資訊。",
-    descriptionEn: "Placeholder description: describe condition, neighborhood amenities, transit access, etc.",
-    descriptionJp: "デモ用の説明文：建物の状態、周辺環境、交通アクセスなどを記載します。",
-    locationZh: "神奈川縣橫濱市",
-    locationEn: "Yokohama, Kanagawa",
-    locationJp: "神奈川県横浜市",
-    priceJPY: null,
-    layout: "2LDK",
-    landAreaSqm: null,
-    floorAreaSqm: 78,
-    buildYear: "2015",
-    coverImage: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=1600&q=85",
-    gallery: ["https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=1600&q=85"],
-    sortOrder: 2,
-  },
-];
-
 async function main() {
   const batchWrites: Promise<unknown>[] = [];
 
@@ -165,7 +108,7 @@ async function main() {
     );
   });
 
-  DEMO_PROPERTIES.forEach((item) => {
+  PROPERTIES_DATA.forEach((item) => {
     const { id, ...data } = item;
     batchWrites.push(
       adminDb
@@ -182,7 +125,7 @@ async function main() {
   });
 
   await Promise.all(batchWrites);
-  console.log(`Seeded: site_settings (3), news (${NEWS_DATA.length}), cases (${CASES_DATA.length}), demo properties (${DEMO_PROPERTIES.length}).`);
+  console.log(`Seeded: site_settings (3), news (${NEWS_DATA.length}), cases (${CASES_DATA.length}), demo properties (${PROPERTIES_DATA.length}).`);
   process.exit(0);
 }
 
