@@ -17,7 +17,8 @@ export const DEFAULT_GENERAL: SiteSettingsGeneral = {
   hoursZh: "週一至週五 09:00 - 18:00 (JST)\n週末與日本國定假日可預約線上諮詢",
   hoursEn: "Mon - Fri 09:00 - 18:00 (JST)\nOnline consultations available on weekends by appointment",
   hoursJp: "月曜〜金曜 09:00 - 18:00 (JST)\n週末・祝日はオンライン相談予約可",
-  social: { line: "", instagram: "", whatsapp: "", facebook: "", linkedin: "", x: "" },
+  // "#" keeps the floating icon visibly wired up without linking anywhere real.
+  social: { line: "#", instagram: "#", whatsapp: "#", facebook: "", linkedin: "", x: "" },
 };
 
 export const DEFAULT_HOME: SiteSettingsHome = {
