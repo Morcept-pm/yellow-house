@@ -55,6 +55,31 @@ npm run dev
 - 前台：`/zh`、`/en`、`/jp`（bare path 會自動導向）
 - 後台：`/admin/login`
 
+### 預覽模式（不需要 Firebase）
+
+沒有 `.env`（或 `VITE_FIREBASE_API_KEY` / `VITE_FIREBASE_PROJECT_ID` 留空）時，網站會自動進入 **預覽模式**：
+
+- 前台完整可瀏覽：消息／案例／物件改讀 `src/data/` 內建的示範資料，公司資訊、Hero 文案、SEO 則使用 `siteSettings.ts` 的 `DEFAULT_*`。
+- 完全不連線 Firestore，所以不必等 fallback timeout，內容會立即出現。
+- 左下角會出現「預覽模式 · 顯示內建示範內容」小標籤（可關閉），避免把示範資料誤認成客戶的正式內容。
+- 聯絡表單會回「表單不會真的送出」；`/admin/login` 會顯示後台停用說明。
+
+填好 `.env` 的 `VITE_FIREBASE_*` 後重新啟動，就會自動切回讀 Firestore，不需要改任何程式碼。
+
+### 產出可分享的靜態預覽
+
+```bash
+npm run build:preview     # 輸出到 dist-preview/
+npm run preview:static    # 本機確認
+```
+
+與正式 `npm run build` 的差別只有兩點，都只影響這個 build：
+
+- `--base ./`：所有資源改用相對路徑，因此整包 `dist-preview/` 可以丟到任何子路徑（靜態主機、雲端硬碟、CDN 目錄）直接打開。
+- `VITE_HASH_ROUTER=true`：改用 hash 路由（`#/zh/cases`），所以不需要伺服器端 SPA rewrite，深層連結重新整理也不會 404。
+
+正式部署仍然使用 `npm run build`，維持乾淨網址 + `vercel.json` 的 rewrite。
+
 ## 四、Firebase 專案設定步驟
 
 1. 前往 [Firebase Console](https://console.firebase.google.com/) 建立新專案（建議每位客戶各建一個獨立專案）。

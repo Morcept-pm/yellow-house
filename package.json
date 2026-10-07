@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite --port=3000 --host=0.0.0.0",
     "build": "vite build",
+    "build:preview": "VITE_HASH_ROUTER=true vite build --base ./ --outDir dist-preview",
+    "preview:static": "vite preview --outDir dist-preview",
     "preview": "vite preview",
     "clean": "rm -rf dist",
     "lint": "tsc --noEmit",

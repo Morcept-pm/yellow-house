@@ -11,7 +11,7 @@ import {
   orderBy,
   serverTimestamp,
 } from "firebase/firestore";
-import { db } from "../firebase";
+import { db, isFirebaseConfigured } from "../firebase";
 import type { PublishStatus } from "../../types/content";
 
 type WithStatus = { status: PublishStatus; slug?: string };
@@ -75,9 +75,12 @@ export async function deleteDocById(collectionName: string, id: string): Promise
  * pending after `timeoutMs` — a bad project id/API key doesn't reject the
  * Firestore SDK's call, it retries the realtime channel forever, so a plain
  * try/catch never sees a rejection to catch. A successful read that's
- * genuinely empty (no published docs yet) is left as-is.
+ * genuinely empty (no published docs yet) is left as-is. With no Firebase
+ * config at all (preview mode) the read is skipped entirely, so the demo
+ * content paints immediately instead of after the timeout.
  */
 export async function withFallback<T>(read: () => Promise<T>, fallback: T, timeoutMs = 2500): Promise<T> {
+  if (!isFirebaseConfigured) return fallback;
   try {
     return await Promise.race([
       read(),

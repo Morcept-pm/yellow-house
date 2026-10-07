@@ -1,3 +1,5 @@
+import { asset } from "../lib/utils";
+
 /**
  * Brand lockup. Two colour variants live as separate SVGs in /public/brand so
  * they stay cacheable static assets; both are rendered stacked and cross-faded
@@ -19,14 +21,14 @@ export function Logo({
       {/* Only one <img> carries the alt text — the other is decorative, so the
           lockup is announced once regardless of which variant is visible. */}
       <img
-        src="/brand/yh-logo.svg"
+        src={asset("/brand/yh-logo.svg")}
         alt="Yellow House"
         className={`absolute inset-0 h-full w-full object-contain transition-opacity duration-300 ${
           tone === "onLight" ? "opacity-100" : "opacity-0"
         }`}
       />
       <img
-        src="/brand/yh-logo-white.svg"
+        src={asset("/brand/yh-logo-white.svg")}
         alt=""
         aria-hidden="true"
         className={`absolute inset-0 h-full w-full object-contain transition-opacity duration-300 ${

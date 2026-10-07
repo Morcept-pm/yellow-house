@@ -1,5 +1,5 @@
 import { collection, addDoc, getDocs, doc, updateDoc, orderBy, query, serverTimestamp } from "firebase/firestore";
-import { db } from "../firebase";
+import { db, isFirebaseConfigured, PreviewModeError } from "../firebase";
 import type { FormSubmission, FormSubmissionDoc, SubmissionStatus } from "../../types/content";
 
 const COLLECTION = "form_submissions";
@@ -40,6 +40,12 @@ export async function submitContactForm(input: ContactFormInput): Promise<void> 
     }
   } catch {
     // localStorage unavailable — skip the soft rate limit, rely on honeypot only.
+  }
+
+  if (!isFirebaseConfigured) {
+    throw new PreviewModeError(
+      "預覽模式：尚未設定 Firebase，表單不會真的送出。"
+    );
   }
 
   const payload: Omit<FormSubmissionDoc, "createdAt" | "updatedAt"> = {

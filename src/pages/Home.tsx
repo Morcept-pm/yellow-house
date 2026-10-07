@@ -9,7 +9,7 @@ import { watchHome, DEFAULT_HOME } from "../lib/content/siteSettings";
 import { listPublishedCases } from "../lib/content/cases";
 import { listPublishedNews } from "../lib/content/news";
 import { listPublishedProperties } from "../lib/content/properties";
-import { pickLang } from "../lib/utils";
+import { asset, assetSrcSet, pickLang } from "../lib/utils";
 import type { SiteSettingsHome, CaseArticle, NewsArticle, Property } from "../types/content";
 
 /* ------------------------------------------------------------------ *
@@ -21,8 +21,8 @@ import type { SiteSettingsHome, CaseArticle, NewsArticle, Property } from "../ty
  * services or placeholder cards.
  * ------------------------------------------------------------------ */
 const bundled = (n: number): RotatingFrame => ({
-  src: `/hero/hero-${n}-1920.jpg`,
-  srcSet: [800, 1280, 1920, 2560].map((w) => `/hero/hero-${n}-${w}.jpg ${w}w`).join(", "),
+  src: asset(`/hero/hero-${n}-1920.jpg`),
+  srcSet: [800, 1280, 1920, 2560].map((w) => `${asset(`/hero/hero-${n}-${w}.jpg`)} ${w}w`).join(", "),
 });
 const BUNDLED_HERO: RotatingFrame[] = [bundled(1), bundled(2), bundled(3)];
 
@@ -364,8 +364,8 @@ export function Home() {
           whileInView={{ opacity: 1 }}
           viewport={inView}
           transition={{ duration: 0.7 }}
-          src="/hero/hero-3-1920.jpg"
-          srcSet="/hero/hero-3-1280.jpg 1280w, /hero/hero-3-1920.jpg 1920w, /hero/hero-3-2560.jpg 2560w"
+          src={asset("/hero/hero-3-1920.jpg")}
+          srcSet={assetSrcSet("/hero/hero-3-1280.jpg 1280w, /hero/hero-3-1920.jpg 1920w, /hero/hero-3-2560.jpg 2560w")}
           sizes="100vw"
           alt=""
           aria-hidden="true"
@@ -719,8 +719,8 @@ export function Home() {
           >
             <div className="aspect-[4/5] overflow-hidden rounded-3xl bg-surface-warm lg:sticky lg:top-28">
               <img
-                src="/hero/hero-1-1280.jpg"
-                srcSet="/hero/hero-1-800.jpg 800w, /hero/hero-1-1280.jpg 1280w, /hero/hero-1-1920.jpg 1920w"
+                src={asset("/hero/hero-1-1280.jpg")}
+                srcSet={assetSrcSet("/hero/hero-1-800.jpg 800w, /hero/hero-1-1280.jpg 1280w, /hero/hero-1-1920.jpg 1920w")}
                 sizes="(min-width: 1024px) 32vw, 100vw"
                 alt=""
                 aria-hidden="true"
@@ -786,8 +786,8 @@ export function Home() {
           >
             <div className="aspect-[5/4] overflow-hidden rounded-3xl">
               <img
-                src="/hero/hero-2-1280.jpg"
-                srcSet="/hero/hero-2-800.jpg 800w, /hero/hero-2-1280.jpg 1280w, /hero/hero-2-1920.jpg 1920w"
+                src={asset("/hero/hero-2-1280.jpg")}
+                srcSet={assetSrcSet("/hero/hero-2-800.jpg 800w, /hero/hero-2-1280.jpg 1280w, /hero/hero-2-1920.jpg 1920w")}
                 sizes="(min-width: 1024px) 48vw, 100vw"
                 alt=""
                 aria-hidden="true"
@@ -907,8 +907,8 @@ export function Home() {
       {/* ══ H · CLOSING CTA ═══════════════════════════════════════════════ */}
       <section className="relative w-full">
         <img
-          src="/hero/hero-1-1920.jpg"
-          srcSet="/hero/hero-1-1280.jpg 1280w, /hero/hero-1-1920.jpg 1920w, /hero/hero-1-2560.jpg 2560w"
+          src={asset("/hero/hero-1-1920.jpg")}
+          srcSet={assetSrcSet("/hero/hero-1-1280.jpg 1280w, /hero/hero-1-1920.jpg 1920w, /hero/hero-1-2560.jpg 2560w")}
           sizes="100vw"
           alt=""
           aria-hidden="true"

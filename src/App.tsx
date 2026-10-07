@@ -6,6 +6,7 @@ import { Footer } from "./components/Footer";
 import { BackToTop } from "./components/BackToTop";
 import { FloatingSocial } from "./components/FloatingSocial";
 import { SEOManager } from "./components/SEOManager";
+import { PreviewBadge } from "./components/PreviewBadge";
 import { Home } from "./pages/Home";
 import { Services } from "./pages/Services";
 import { Company } from "./pages/Company";
@@ -77,6 +78,7 @@ export default function App() {
             <Footer />
             <FloatingSocial />
             <BackToTop />
+            <PreviewBadge />
           </div>
         </CurrencyProvider>
       </LanguageProvider>

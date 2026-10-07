@@ -6,6 +6,7 @@ import { SocialLinks } from "../components/SocialLinks";
 import { useSocialLinks } from "../lib/useSocialLinks";
 import { pickLang } from "../lib/utils";
 import { submitContactForm, RateLimitedError, SpamRejectedError } from "../lib/content/forms";
+import { PreviewModeError } from "../lib/firebase";
 
 export function Contact() {
   const { t, lang } = useLanguage();
@@ -70,6 +71,15 @@ export function Contact() {
         // Bots fill every field, including the honeypot. Show success anyway
         // so we don't reveal that it was detected.
         setSubmitted(true);
+      } else if (err instanceof PreviewModeError) {
+        setErrorMsg(
+          pickLang(
+            lang,
+            "預覽模式：目前未連接後端資料庫，表單不會真的送出。",
+            "Preview mode: no backend is connected, so this form is not actually submitted.",
+            "プレビューモード：バックエンド未接続のため、フォームは送信されません。"
+          )
+        );
       } else if (err instanceof RateLimitedError) {
         setErrorMsg(
           pickLang(lang, "請稍候片刻再送出一次諮詢表單。", "Please wait a moment before submitting again.", "少し時間を置いてから再度お試しください。")

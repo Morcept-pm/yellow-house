@@ -1,5 +1,5 @@
 import { doc, getDoc, onSnapshot, setDoc, serverTimestamp } from "firebase/firestore";
-import { db } from "../firebase";
+import { db, isFirebaseConfigured } from "../firebase";
 import type { SiteSettingsGeneral, SiteSettingsHome, SiteSettingsSeo } from "../../types/content";
 
 export const DEFAULT_GENERAL: SiteSettingsGeneral = {
@@ -53,25 +53,35 @@ export const DEFAULT_SEO: SiteSettingsSeo = {
   pages: {},
 };
 
+/** No-op subscription used in preview mode: hands back the bundled defaults once. */
+function watchDefault<T>(cb: (v: T) => void, value: T) {
+  cb(value);
+  return () => {};
+}
+
 export function watchGeneral(cb: (v: SiteSettingsGeneral) => void) {
+  if (!isFirebaseConfigured) return watchDefault(cb, DEFAULT_GENERAL);
   return onSnapshot(doc(db, "site_settings", "general"), (snap) => {
     cb(snap.exists() ? { ...DEFAULT_GENERAL, ...(snap.data() as SiteSettingsGeneral) } : DEFAULT_GENERAL);
   });
 }
 
 export function watchHome(cb: (v: SiteSettingsHome) => void) {
+  if (!isFirebaseConfigured) return watchDefault(cb, DEFAULT_HOME);
   return onSnapshot(doc(db, "site_settings", "home"), (snap) => {
     cb(snap.exists() ? { ...DEFAULT_HOME, ...(snap.data() as SiteSettingsHome) } : DEFAULT_HOME);
   });
 }
 
 export function watchSeo(cb: (v: SiteSettingsSeo) => void) {
+  if (!isFirebaseConfigured) return watchDefault(cb, DEFAULT_SEO);
   return onSnapshot(doc(db, "site_settings", "seo"), (snap) => {
     cb(snap.exists() ? { ...DEFAULT_SEO, ...(snap.data() as SiteSettingsSeo) } : DEFAULT_SEO);
   });
 }
 
 export async function getGeneralOnce(): Promise<SiteSettingsGeneral> {
+  if (!isFirebaseConfigured) return DEFAULT_GENERAL;
   const snap = await getDoc(doc(db, "site_settings", "general"));
   return snap.exists() ? { ...DEFAULT_GENERAL, ...(snap.data() as SiteSettingsGeneral) } : DEFAULT_GENERAL;
 }

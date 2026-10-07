@@ -6,7 +6,7 @@ import { useGeneral } from "../lib/useGeneral";
 import { ClosingCta } from "../components/ClosingCta";
 import { PageBanner } from "../components/PageBanner";
 import { Kicker } from "../components/Kicker";
-import { pickLang } from "../lib/utils";
+import { asset, assetSrcSet, pickLang } from "../lib/utils";
 
 const rise = { hidden: { opacity: 0, y: 24 }, visible: { opacity: 1, y: 0 } };
 const inView = { once: true, margin: "-70px" } as const;
@@ -67,8 +67,8 @@ export function Company() {
           >
             <div className="aspect-[4/5] overflow-hidden rounded-3xl bg-surface-warm">
               <img
-                src="/hero/hero-2-1280.jpg"
-                srcSet="/hero/hero-2-800.jpg 800w, /hero/hero-2-1280.jpg 1280w, /hero/hero-2-1920.jpg 1920w"
+                src={asset("/hero/hero-2-1280.jpg")}
+                srcSet={assetSrcSet("/hero/hero-2-800.jpg 800w, /hero/hero-2-1280.jpg 1280w, /hero/hero-2-1920.jpg 1920w")}
                 sizes="(min-width: 1024px) 40vw, 100vw"
                 alt=""
                 aria-hidden="true"

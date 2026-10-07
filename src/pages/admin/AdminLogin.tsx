@@ -1,6 +1,8 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { useLocation } from "wouter";
 import { useAuth } from "../../lib/AuthContext";
+import { isFirebaseConfigured, PreviewModeError } from "../../lib/firebase";
+import { asset } from "../../lib/utils";
 
 export function AdminLogin() {
   const { user, adminProfile, isAdmin, signIn } = useAuth();
@@ -20,13 +22,18 @@ export function AdminLogin() {
     setLoading(true);
     try {
       await signIn(email, password);
-    } catch {
-      setError("登入失敗，請確認 Email 與密碼是否正確。");
+    } catch (err) {
+      setError(
+        err instanceof PreviewModeError
+          ? err.message
+          : "登入失敗，請確認 Email 與密碼是否正確。"
+      );
     } finally {
       setLoading(false);
     }
   };
 
+  const previewMode = !isFirebaseConfigured;
   const resolved = user !== undefined && adminProfile !== undefined;
   const showInactiveNotice = resolved && user && !isAdmin;
 
@@ -36,7 +43,7 @@ export function AdminLogin() {
         <div className="flex flex-col items-center gap-2">
           {/* The old /yellow_house.png is white artwork — invisible on this
               light card. Use the brand-coloured lockup instead. */}
-          <img src="/brand/yh-logo.svg" alt="Yellow House" className="h-12 object-contain" />
+          <img src={asset("/brand/yh-logo.svg")} alt="Yellow House" className="h-12 object-contain" />
           <h1 className="font-headline-md text-lg text-primary font-medium">客戶後台登入</h1>
         </div>
 
@@ -67,6 +74,11 @@ export function AdminLogin() {
               className="rounded-md p-3 border border-outline-variant bg-surface focus:border-primary focus:outline-none text-sm"
             />
           </div>
+          {previewMode && (
+            <p className="text-xs text-on-surface-variant">
+              預覽模式：尚未設定 Firebase，後台登入功能停用。前台內容顯示的是內建示範資料。
+            </p>
+          )}
           {error && <p className="text-xs text-red-600">{error}</p>}
           <button
             type="submit"

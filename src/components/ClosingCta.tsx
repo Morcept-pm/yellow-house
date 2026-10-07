@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { Link } from "wouter";
 import { motion } from "motion/react";
 import { useLanguage } from "../lib/LanguageContext";
-import { pickLang } from "../lib/utils";
+import { asset, pickLang } from "../lib/utils";
 
 /**
  * The closing call to action shared by every page, matching the homepage:
@@ -24,14 +24,14 @@ export function ClosingCta({
   return (
     <section className="relative w-full">
       <img
-        src={image}
+        src={asset(image)}
         srcSet={
           image.startsWith("/hero/")
-            ? image.replace(/-\d+\.jpg$/, "-1280.jpg") +
+            ? asset(image.replace(/-\d+\.jpg$/, "-1280.jpg")) +
               " 1280w, " +
-              image.replace(/-\d+\.jpg$/, "-1920.jpg") +
+              asset(image.replace(/-\d+\.jpg$/, "-1920.jpg")) +
               " 1920w, " +
-              image.replace(/-\d+\.jpg$/, "-2560.jpg") +
+              asset(image.replace(/-\d+\.jpg$/, "-2560.jpg")) +
               " 2560w"
             : undefined
         }
