@@ -51,7 +51,7 @@ const translations: Record<Language, Record<string, string>> = {
     "home.stat.certified_label": "CERTIFIED",
     "home.stat.certified_val": "正式宅建業執照",
     "home.stat.global_label": "GLOBAL",
-    "home.stat.global_val": "國際雙語服務",
+    "home.stat.global_val": "國際多語服務",
     "home.stat.license_label": "LICENSE",
     "home.stat.license_val": "神奈川縣知事 (1) 第32070號",
 
@@ -352,7 +352,7 @@ const translations: Record<Language, Record<string, string>> = {
     "home.stat.certified_label": "CERTIFIED",
     "home.stat.certified_val": "Licensed Real Estate Broker",
     "home.stat.global_label": "GLOBAL",
-    "home.stat.global_val": "Bilingual Advisory",
+    "home.stat.global_val": "Multilingual Advisory",
     "home.stat.license_label": "LICENSE",
     "home.stat.license_val": "Governor of Kanagawa (1) No. 32070",
 
@@ -450,7 +450,7 @@ const translations: Record<Language, Record<string, string>> = {
     "home.process.step2.title": "Investigation & Due Diligence",
     "home.process.step2.desc": "Conducting on-site surveys, structural audits, legal checks, and full cost assessments.",
     "home.process.step3.title": "Contract & Negotiation",
-    "home.process.step3.desc": "Negotiating optimal terms and providing clear, legally compliant bilingual contract reviews.",
+    "home.process.step3.desc": "Negotiating optimal terms and providing clear, legally compliant multilingual contract reviews.",
     "home.process.step4.title": "Settlement & Closing",
     "home.process.step4.desc": "Coordinating fund transfers, official title registration, and formal key handover.",
     "home.process.step5.title": "Post-Purchase Management",
