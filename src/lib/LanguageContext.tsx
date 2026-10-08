@@ -977,6 +977,52 @@ function isSupportedLang(value: string | undefined): value is Language {
   return !!value && (SUPPORTED_LANGS as string[]).includes(value);
 }
 
+/** The language the visitor explicitly picked via the switcher, if any. */
+function readSavedLang(): Language | null {
+  try {
+    const saved = localStorage.getItem("yh_language");
+    return isSupportedLang(saved ?? undefined) ? (saved as Language) : null;
+  } catch {
+    // Private mode / storage disabled.
+    return null;
+  }
+}
+
+/**
+ * Maps one BCP-47 tag reported by the browser to a locale we publish, or null
+ * if we don't publish it. Only the primary subtag matters: every zh-* variant
+ * (including Simplified) lands on the Traditional site, which is far closer
+ * than falling through to English.
+ */
+function matchBrowserTag(tag: string): Language | null {
+  switch (tag.toLowerCase().split("-")[0]) {
+    case "zh":
+      return "zh";
+    case "en":
+      return "en";
+    case "ja":
+      return "jp"; // route segment is "jp", BCP-47 code is "ja"
+    default:
+      return null;
+  }
+}
+
+/**
+ * First locale we publish that appears in the visitor's browser/OS language
+ * preferences, honouring the order the browser ranks them in. Deliberately
+ * language-based rather than IP/geo-based, so a Japanese speaker browsing from
+ * Taiwan still gets Japanese.
+ */
+function detectBrowserLang(): Language | null {
+  if (typeof navigator === "undefined") return null;
+  const tags = navigator.languages?.length ? navigator.languages : [navigator.language];
+  for (const tag of tags) {
+    const match = tag && matchBrowserTag(tag);
+    if (match) return match;
+  }
+  return null;
+}
+
 const LanguageContext = createContext<LanguageContextType>({
   lang: DEFAULT_LANG,
   setLang: () => {},
@@ -991,18 +1037,13 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const urlLocale = segments[0];
   const locale = isSupportedLang(urlLocale) ? urlLocale : null;
 
-  // Bare or unrecognized-locale paths get redirected to a locale-prefixed
-  // URL — using the visitor's last-chosen language when we know it, so the
-  // language switch and this fallback stay consistent.
+  // Bare or unrecognized-locale paths get redirected to a locale-prefixed URL.
+  // A language the visitor picked themselves always wins, so the switcher
+  // sticks across visits; otherwise we follow their browser/OS language, and
+  // only fall back to DEFAULT_LANG when they read none of the three.
   useEffect(() => {
     if (locale) return;
-    let preferred: Language = DEFAULT_LANG;
-    try {
-      const saved = localStorage.getItem("yh_language");
-      if (isSupportedLang(saved ?? undefined)) preferred = saved as Language;
-    } catch {
-      // ignore
-    }
+    const preferred: Language = readSavedLang() ?? detectBrowserLang() ?? DEFAULT_LANG;
     const rest = segments.join("/");
     navigate(`/${preferred}${rest ? "/" + rest : ""}`, { replace: true });
   }, [location, locale]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -1013,16 +1054,10 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     document.documentElement.lang = HTML_LANG[lang];
   }, [lang]);
 
-  useEffect(() => {
-    if (locale) {
-      try {
-        localStorage.setItem("yh_language", locale);
-      } catch {
-        // ignore
-      }
-    }
-  }, [locale]);
-
+  // Only an explicit switcher choice is persisted. Merely landing on a
+  // locale-prefixed URL must not overwrite it, or a shared /en link would
+  // silently repoint a visitor who had chosen Japanese — and an auto-detected
+  // locale would harden into a stored "choice" the visitor never made.
   const setLang = (newLang: Language) => {
     const rest = segments.slice(locale ? 1 : 0).join("/");
     try {
