@@ -9,6 +9,7 @@ import { PageBanner } from "../components/PageBanner";
 import { ClosingCta } from "../components/ClosingCta";
 import { Kicker } from "../components/Kicker";
 import { pickLang } from "../lib/utils";
+import { usePropertiesSettings, tr } from "../lib/useSiteSettings";
 
 const CATEGORY_LABELS: Record<PropertyCategory, { zh: string; en: string; jp: string }> = {
   residential: { zh: "住宅不動產", en: "Residential", jp: "住宅用不動産" },
@@ -71,6 +72,7 @@ function FilterGroup<T extends string>({
 
 export function Properties() {
   const { lang, localePath } = useLanguage();
+  const settings = usePropertiesSettings();
   const [category, setCategory] = useState<CategoryKey>("ALL");
   const [status, setStatus] = useState<StatusKey>("ALL");
   const [page, setPage] = useState(1);
@@ -135,14 +137,9 @@ export function Properties() {
     <div className="flex w-full flex-col overflow-x-hidden bg-surface font-body-md text-on-surface">
       <PageBanner
         image="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=2000&q=85"
-        kicker={pickLang(lang, "在售物件", "Properties for sale", "販売物件")}
-        title={pickLang(lang, "目前在售物件", "Current properties for sale", "現在販売中の物件")}
-        desc={pickLang(
-          lang,
-          "精選目前實際在售的住宅、商用與土地物件，皆由本公司實際勘查與盡職調查後上架。",
-          "A curated selection of residential, commercial, and land properties currently for sale, each verified through our own on-site due diligence.",
-          "現在販売中の住宅・商業・土地物件を厳選してご紹介。すべて当社が現地調査を行ったうえで掲載しています。"
-        )}
+        kicker={tr(settings, "bannerTag", lang)}
+        title={tr(settings, "bannerH1", lang)}
+        desc={tr(settings, "bannerDesc", lang)}
       />
 
       {/* ══ INDEX — grouped text-link filters ═════════════════════════════ */}
@@ -363,14 +360,7 @@ export function Properties() {
         </div>
       </section>
 
-      <ClosingCta
-        title={pickLang(
-          lang,
-          "找不到理想的物件？歡迎與我們聯繫",
-          "Can't find the right property? Talk to us.",
-          "ご希望の物件が見つからない方はお気軽にご相談ください"
-        )}
-      />
+      <ClosingCta title={tr(settings, "ctaTitle", lang)} buttonLabel={tr(settings, "ctaButton", lang)} />
     </div>
   );
 }

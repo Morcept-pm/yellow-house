@@ -1,6 +1,6 @@
-import { collection, addDoc, getDocs, doc, updateDoc, orderBy, query, serverTimestamp } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "../firebase";
-import type { FormSubmission, FormSubmissionDoc, SubmissionStatus } from "../../types/content";
+import type { FormSubmissionDoc } from "../../types/content";
 
 const COLLECTION = "form_submissions";
 const RATE_LIMIT_KEY = "yh_last_submit_at";
@@ -65,14 +65,4 @@ export async function submitContactForm(input: ContactFormInput): Promise<void> 
   } catch {
     // ignore
   }
-}
-
-export async function listSubmissionsAdmin(): Promise<FormSubmission[]> {
-  const q = query(collection(db, COLLECTION), orderBy("createdAt", "desc"));
-  const snap = await getDocs(q);
-  return snap.docs.map((d) => ({ id: d.id, ...(d.data() as FormSubmissionDoc) }));
-}
-
-export async function updateSubmissionStatus(id: string, status: SubmissionStatus): Promise<void> {
-  await updateDoc(doc(db, COLLECTION, id), { status, updatedAt: serverTimestamp() });
 }

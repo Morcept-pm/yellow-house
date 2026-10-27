@@ -8,10 +8,13 @@ import type { CaseArticle } from "../types/content";
 import { ArrowChip } from "../components/ArrowChip";
 import { PriceBlock } from "../components/PriceBlock";
 import { pickLang } from "../lib/utils";
+import { useCategories } from "../lib/useSiteSettings";
+import { resolveCategory, categoryLabel } from "../lib/categories";
 
 export function CaseDetail() {
   const [, params] = useRoute<{ slug: string }>("/:locale/cases/:slug");
-  const { lang, t, localePath } = useLanguage();
+  const { lang, localePath } = useLanguage();
+  const categoryList = useCategories().cases;
   const [copied, setCopied] = useState(false);
   const [item, setItem] = useState<CaseArticle | null | undefined>(undefined);
 
@@ -88,7 +91,7 @@ export function CaseDetail() {
   };
 
   const title = pickLang(lang, item.titleZh, item.titleEn, item.titleJp);
-  const category = pickLang(lang, item.categoryZh, item.categoryEn, item.categoryJp);
+  const category = categoryLabel(resolveCategory(item, categoryList), lang);
   const location = pickLang(lang, item.locationZh, item.locationEn, item.locationJp);
   const details = pickLang(lang, item.detailsZh, item.detailsEn, item.detailsJp);
 
@@ -247,7 +250,7 @@ export function CaseDetail() {
         </div>
       </section>
 
-      <ClosingCta title={t("cta.title")} />
+      <ClosingCta />
     </div>
   );
 }

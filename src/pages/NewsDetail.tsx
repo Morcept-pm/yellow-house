@@ -7,10 +7,13 @@ import { getPublishedNewsBySlug } from "../lib/content/news";
 import type { NewsArticle } from "../types/content";
 import { ArrowChip } from "../components/ArrowChip";
 import { pickLang } from "../lib/utils";
+import { useCategories } from "../lib/useSiteSettings";
+import { resolveCategory, categoryLabel } from "../lib/categories";
 
 export function NewsDetail() {
   const [, params] = useRoute<{ slug: string }>("/:locale/news/:slug");
-  const { lang, t, localePath } = useLanguage();
+  const { lang, localePath } = useLanguage();
+  const categoryList = useCategories().news;
   const [copied, setCopied] = useState(false);
   const [item, setItem] = useState<NewsArticle | null | undefined>(undefined);
 
@@ -87,7 +90,7 @@ export function NewsDetail() {
   };
 
   const title = pickLang(lang, item.titleZh, item.titleEn, item.titleJp);
-  const category = pickLang(lang, item.categoryZh, item.categoryEn, item.categoryJp);
+  const category = categoryLabel(resolveCategory(item, categoryList), lang);
   const readTime = pickLang(lang, item.readTimeZh, item.readTimeEn, item.readTimeJp);
   const content = pickLang(lang, item.contentZh, item.contentEn, item.contentJp);
 
@@ -218,7 +221,7 @@ export function NewsDetail() {
         </div>
       </section>
 
-      <ClosingCta title={t("cta.title")} />
+      <ClosingCta />
     </div>
   );
 }

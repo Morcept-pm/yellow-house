@@ -1,8 +1,19 @@
 {
-  "rewrites": [
+  "redirects": [
     {
-      "source": "/(.*)",
-      "destination": "/index.html"
+      "source": "/admin/:path*",
+      "destination": "https://yellow-house-admin.vercel.app/admin/:path*",
+      "permanent": false
+    },
+    {
+      "source": "/admin",
+      "destination": "https://yellow-house-admin.vercel.app/admin",
+      "permanent": false
     }
+  ],
+  "rewrites": [
+    { "source": "/sitemap.xml", "destination": "/api/sitemap" },
+    { "source": "/robots.txt", "destination": "/api/robots" },
+    { "source": "/((?!api/).*)", "destination": "/index.html" }
   ]
 }

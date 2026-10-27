@@ -7,13 +7,16 @@ import { ClosingCta } from "../components/ClosingCta";
 import { PageBanner } from "../components/PageBanner";
 import { Kicker } from "../components/Kicker";
 import { pickLang } from "../lib/utils";
+import { useCompanySettings, tr } from "../lib/useSiteSettings";
 
 const rise = { hidden: { opacity: 0, y: 24 }, visible: { opacity: 1, y: 0 } };
 const inView = { once: true, margin: "-70px" } as const;
 
 export function Company() {
-  const { t, lang, localePath } = useLanguage();
+  const { lang, localePath } = useLanguage();
   const general = useGeneral();
+  const company = useCompanySettings();
+  const c = (base: string) => tr(company, base, lang);
 
   useEffect(() => {
     document.title = pickLang(
@@ -40,13 +43,13 @@ export function Company() {
     <div className="flex w-full flex-col overflow-x-hidden bg-surface">
       <PageBanner
         image="https://images.unsplash.com/photo-1508804185872-d7badad00f7d?auto=format&fit=crop&w=2000&q=85"
-        kicker={t("company.banner.tag")}
-        title={t("company.banner.h1")}
-        desc={t("company.banner.desc")}
+        kicker={c("bannerTag")}
+        title={c("bannerH1")}
+        desc={c("bannerDesc")}
       >
         <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1">
           <span className="font-label-caps text-label-caps uppercase tracking-widest text-white text-shadow-hero">
-            {pickLang(lang, "實務經驗 15 年", "15 years track record", "実務経験15年")}
+            {c("bannerBadge")}
           </span>
           <span className="font-label-caps text-label-caps font-semibold uppercase tracking-widest text-brand-400 text-shadow-hero">
             KANAGAWA, JAPAN
@@ -87,21 +90,16 @@ export function Company() {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="flex flex-col gap-6 lg:col-span-6 lg:col-start-7"
           >
-            <Kicker>{t("company.rep.tag")}</Kicker>
+            <Kicker>{c("repTag")}</Kicker>
             <h2 className="whitespace-pre-line font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-primary">
-              {t("company.rep.headline")}
+              {c("repHeadline")}
             </h2>
             <div className="flex max-w-prose flex-col gap-5 font-body-md text-body-md leading-relaxed text-on-surface-variant">
-              <p>{t("company.rep.p1")}</p>
-              <p>{t("company.rep.p2")}</p>
+              <p>{c("repP1")}</p>
+              <p>{c("repP2")}</p>
             </div>
             <p className="font-label-caps text-sm font-semibold tracking-wider text-primary">
-              {pickLang(
-                lang,
-                "黃經祐 ｜ 代表人・房東・不動產投資人",
-                "Kei-Yu Huang ｜ Representative Director ・ Landlord ・ Investor",
-                "黄経祐 ｜ 代表・オーナー・不動産投資家"
-              )}
+              {c("repNameRole")}
             </p>
           </motion.div>
         </div>
@@ -119,10 +117,10 @@ export function Company() {
         >
           <span className="font-display-lg text-6xl leading-none text-brand-400">“</span>
           <h2 className="-mt-6 whitespace-pre-line font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg leading-snug text-primary">
-            {t("company.quote")}
+            {c("quote")}
           </h2>
           <p className="mt-2 max-w-2xl font-body-md text-body-md leading-relaxed text-on-surface-variant">
-            {t("company.quote_desc")}
+            {c("quoteDesc")}
           </p>
         </motion.div>
       </section>
@@ -131,9 +129,9 @@ export function Company() {
       <section className="w-full px-margin-mobile py-section md:px-margin-desktop">
         <div className="content-col grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-gutter">
           <div className="flex flex-col gap-4 lg:col-span-4">
-            <Kicker>{t("company.overview.tag")}</Kicker>
+            <Kicker>{c("overviewTag")}</Kicker>
             <h2 className="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-primary">
-              {t("company.overview.title")}
+              {c("overviewTitle")}
             </h2>
           </div>
 
@@ -174,9 +172,9 @@ export function Company() {
             transition={{ duration: 0.5 }}
             className="order-1 flex flex-col gap-6 lg:col-span-5"
           >
-            <Kicker>{t("company.visit.tag")}</Kicker>
+            <Kicker>{c("visitTag")}</Kicker>
             <h2 className="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-primary">
-              {t("company.visit.title")}
+              {c("visitTitle")}
             </h2>
 
             <div className="flex flex-col gap-5">
@@ -215,7 +213,7 @@ export function Company() {
               href={localePath("/contact")}
               className="group mt-2 inline-flex items-center gap-2 self-start rounded-lg border border-primary px-8 py-3.5 font-label-caps text-label-caps uppercase tracking-widest text-primary transition-colors hover:border-brand-500 hover:bg-brand-500"
             >
-              {t("cta.button")}
+              {tr(general, "ctaButton", lang)}
               <span className="material-symbols-outlined text-base transition-transform group-hover:translate-x-1">
                 arrow_forward
               </span>
@@ -243,7 +241,7 @@ export function Company() {
                 </span>
               </a>
               <iframe
-                title={t("company.visit.title")}
+                title={c("visitTitle")}
                 src={`https://maps.google.com/maps?q=${mapQuery}&z=15&output=embed`}
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
@@ -254,7 +252,7 @@ export function Company() {
         </div>
       </section>
 
-      <ClosingCta title={t("cta.title")} />
+      <ClosingCta />
     </div>
   );
 }

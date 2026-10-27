@@ -10,6 +10,9 @@ import { listPublishedCases } from "../lib/content/cases";
 import { listPublishedNews } from "../lib/content/news";
 import { listPublishedProperties } from "../lib/content/properties";
 import { pickLang } from "../lib/utils";
+import { useGeneral } from "../lib/useGeneral";
+import { useCategories, useSeoSettings, tr } from "../lib/useSiteSettings";
+import { resolveCategory } from "../lib/categories";
 import type { SiteSettingsHome, CaseArticle, NewsArticle, Property } from "../types/content";
 
 /* ------------------------------------------------------------------ *
@@ -32,11 +35,11 @@ const BUNDLED_HERO: RotatingFrame[] = [bundled(1), bundled(2), bundled(3)];
  * of that type, not decoration.
  */
 const BUSINESSES = [
-  { num: "01", key: "home.biz1", caseCategory: "Residential" },
-  { num: "02", key: "home.biz2", caseCategory: "Commercial" },
-  { num: "03", key: "home.biz3", caseCategory: "Renovation & Resale" },
-  { num: "04", key: "home.biz4", caseCategory: "Development" },
-  { num: "05", key: "home.biz5", caseCategory: "Hospitality" },
+  { num: "01", key: "home.biz1", caseCategory: "residential" },
+  { num: "02", key: "home.biz2", caseCategory: "commercial" },
+  { num: "03", key: "home.biz3", caseCategory: "renovation" },
+  { num: "04", key: "home.biz4", caseCategory: "development" },
+  { num: "05", key: "home.biz5", caseCategory: "hospitality" },
 ] as const;
 
 const PERSPECTIVES = ["item1", "item2", "item3", "item4", "item5", "item6"] as const;
@@ -145,15 +148,14 @@ export function Home() {
   const [news, setNews] = useState<NewsArticle[]>([]);
   const [properties, setProperties] = useState<Property[]>([]);
   const [heroIndex, setHeroIndex] = useState(0);
+  const general = useGeneral();
+  const caseCategories = useCategories().cases;
+  const seo = useSeoSettings();
 
+  // The homepage title is the admin's SEO title (SEO／Google 搜尋顯示 tab).
   useEffect(() => {
-    document.title = pickLang(
-      lang,
-      "Yellow House - 日本在地的實務不動產夥伴 | 株式会社イエローハウスカンパニー",
-      "Yellow House - Your Practical Real Estate Partner in Japan | Yellow House Company Inc.",
-      "Yellow House - 日本の不動産を実務目線でサポート | 株式会社イエローハウスカンパニー"
-    );
-  }, [lang]);
+    document.title = tr(seo, "defaultTitle", lang);
+  }, [lang, seo]);
 
   useEffect(() => watchHome(setHome), []);
 
@@ -191,10 +193,11 @@ export function Home() {
   const caseByCategory = useMemo(() => {
     const map = new Map<string, CaseArticle>();
     cases.forEach((c) => {
-      if (!map.has(c.categoryEn) && c.image) map.set(c.categoryEn, c);
+      const key = resolveCategory(c, caseCategories)?.key;
+      if (key && !map.has(key) && c.image) map.set(key, c);
     });
     return map;
-  }, [cases]);
+  }, [cases, caseCategories]);
 
   /** Cases not already shown as a business thumbnail, for the paged carousel. */
   const railCases = useMemo(() => {
@@ -210,12 +213,27 @@ export function Home() {
   const casePager = usePaged<CaseArticle>(railCases, 3);
   const newsPager = usePaged<NewsArticle>(newsItems, 4);
 
+  // Section copy below is admin-editable (site_settings/home); each read falls
+  // back to the bundled translation if a field or list entry is blank.
+  const stat = (i: number, fallbackKey: string) => {
+    const entry = home.trustStats?.[i];
+    return (entry && pickLang(lang, entry.valueZh, entry.valueEn, entry.valueJp)) || t(fallbackKey);
+  };
   const stats = [
-    { icon: "history", label: t("home.stat.experience_label"), value: t("home.stat.experience_val") },
-    { icon: "verified", label: t("home.stat.certified_label"), value: t("home.stat.certified_val") },
-    { icon: "language", label: t("home.stat.global_label"), value: t("home.stat.global_val") },
-    { icon: "description", label: t("home.stat.license_label"), value: t("home.stat.license_val") },
+    { icon: "history", label: t("home.stat.experience_label"), value: stat(0, "home.stat.experience_val") },
+    { icon: "verified", label: t("home.stat.certified_label"), value: stat(1, "home.stat.certified_val") },
+    { icon: "language", label: t("home.stat.global_label"), value: stat(2, "home.stat.global_val") },
+    { icon: "description", label: t("home.stat.license_label"), value: stat(3, "home.stat.license_val") },
   ];
+  const bizItem = (i: number, field: "title" | "desc", fallbackKey: string) => {
+    const entry = home.bizTourItems?.[i];
+    return (entry && tr(entry, field, lang)) || t(fallbackKey);
+  };
+  const perspectiveItem = (i: number, field: "title" | "desc", fallbackKey: string) => {
+    const entry = home.perspectiveItems?.[i];
+    return (entry && tr(entry, field, lang)) || t(fallbackKey);
+  };
+  const rep = home.representative;
 
   return (
     <div className="flex w-full flex-col overflow-x-hidden bg-surface">
@@ -385,12 +403,12 @@ export function Home() {
             <div className="flex flex-col gap-5 md:col-span-5">
               <Kicker>{t("home.perspective.tag")}</Kicker>
               <h2 className="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-primary">
-                {t("home.perspective.title")}
+                {tr(home, "perspectiveTitle", lang) || t("home.perspective.title")}
               </h2>
             </div>
             <div className="flex flex-col items-start gap-6 md:col-span-6 md:col-start-7">
               <p className="font-body-md text-body-md leading-relaxed text-on-surface-variant">
-                {t("home.perspective.desc")}
+                {tr(home, "perspectiveDesc", lang) || t("home.perspective.desc")}
               </p>
               <Link
                 href={localePath("/company")}
@@ -422,11 +440,11 @@ export function Home() {
             <div className="flex max-w-xl flex-col gap-4">
               <Kicker>{t("home.services.tag")}</Kicker>
               <h2 className="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-primary">
-                {t("home.services.title")}
+                {tr(home, "bizTourTitle", lang) || t("home.services.title")}
               </h2>
             </div>
             <p className="max-w-sm font-body-md text-sm text-on-surface-variant md:pb-2">
-              {t("home.services.desc")}
+              {tr(home, "bizTourDesc", lang) || t("home.services.desc")}
             </p>
           </motion.div>
 
@@ -464,10 +482,10 @@ export function Home() {
 
                     <div className="flex min-w-0 flex-1 flex-col gap-1.5">
                       <h3 className="font-headline-md text-base leading-snug text-primary transition-colors group-hover:text-brand-600 md:text-lg">
-                        {t(`${biz.key}.title`)}
+                        {bizItem(i, "title", `${biz.key}.title`)}
                       </h3>
                       <p className="line-clamp-2 font-body-md text-xs leading-relaxed text-on-surface-variant md:text-sm">
-                        {t(`${biz.key}.desc`)}
+                        {bizItem(i, "desc", `${biz.key}.desc`)}
                       </p>
                     </div>
 
@@ -742,7 +760,7 @@ export function Home() {
             >
               <Kicker>{pickLang(lang, "判斷視角", "How we assess", "判断の視点")}</Kicker>
               <h2 className="max-w-lg font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-primary">
-                {t("home.advisor.title")}
+                {tr(home, "advisorTitle", lang) || t("home.advisor.title")}
               </h2>
             </motion.div>
 
@@ -761,10 +779,10 @@ export function Home() {
                     {String(i + 1).padStart(2, "0")}
                   </span>
                   <h3 className="font-headline-md text-lg text-primary">
-                    {t(`home.perspective.${key}_title`)}
+                    {perspectiveItem(i, "title", `home.perspective.${key}_title`)}
                   </h3>
                   <p className="font-body-md text-sm leading-relaxed text-on-surface-variant">
-                    {t(`home.perspective.${key}_desc`)}
+                    {perspectiveItem(i, "desc", `home.perspective.${key}_desc`)}
                   </p>
                 </motion.li>
               ))}
@@ -786,8 +804,8 @@ export function Home() {
           >
             <div className="aspect-[5/4] overflow-hidden rounded-3xl">
               <img
-                src="/hero/hero-2-1280.jpg"
-                srcSet="/hero/hero-2-800.jpg 800w, /hero/hero-2-1280.jpg 1280w, /hero/hero-2-1920.jpg 1920w"
+                src={rep?.image || "/hero/hero-2-1280.jpg"}
+                srcSet={rep?.image ? undefined : "/hero/hero-2-800.jpg 800w, /hero/hero-2-1280.jpg 1280w, /hero/hero-2-1920.jpg 1920w"}
                 sizes="(min-width: 1024px) 48vw, 100vw"
                 alt=""
                 aria-hidden="true"
@@ -809,12 +827,12 @@ export function Home() {
             <Kicker>{t("home.advisor.tag")}</Kicker>
             <div>
               <h3 className="font-headline-md text-2xl font-medium text-primary md:text-3xl">
-                {t("home.advisor.name")}
+                {(rep && tr(rep, "name", lang)) || t("home.advisor.name")}
               </h3>
-              <p className="mt-1.5 font-label-caps text-sm text-on-surface-variant">{t("home.advisor.role")}</p>
+              <p className="mt-1.5 font-label-caps text-sm text-on-surface-variant">{(rep && tr(rep, "role", lang)) || t("home.advisor.role")}</p>
             </div>
             <p className="font-body-md text-body-md leading-relaxed text-on-surface-variant">
-              {t("home.advisor.desc")}
+              {(rep && tr(rep, "desc", lang)) || t("home.advisor.desc")}
             </p>
             <Link
               href={localePath("/company")}
@@ -927,14 +945,14 @@ export function Home() {
               className="max-w-xl rounded-3xl bg-brand-500 p-8 shadow-[0_28px_70px_-40px_rgba(21,18,14,0.6)] md:p-12"
             >
               <h2 className="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-primary">
-                {t("cta.title")}
+                {tr(general, "ctaTitle", lang) || t("cta.title")}
               </h2>
               <div className="mt-8 flex flex-wrap gap-3">
                 <Link
                   href={localePath("/contact")}
                   className="rounded-lg bg-primary px-8 py-4 font-label-caps text-label-caps uppercase tracking-widest text-on-primary transition-colors hover:bg-surface hover:text-primary"
                 >
-                  {t("cta.button")}
+                  {tr(general, "ctaButton", lang) || t("cta.button")}
                 </Link>
                 <Link
                   href={localePath("/properties")}

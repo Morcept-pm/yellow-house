@@ -9,6 +9,22 @@ export interface Trilingual {
   jp: string;
 }
 
+// A single category entry for News or Cases — `key` is assigned once (at
+// creation) and never changes, since published articles reference it by
+// this key. Only the labels are meant to be edited afterwards.
+export interface CategoryItem {
+  key: string;
+  labelZh: string;
+  labelEn: string;
+  labelJp: string;
+}
+
+export interface SiteSettingsCategories {
+  news: CategoryItem[];
+  cases: CategoryItem[];
+  updatedAt?: Timestamp;
+}
+
 // ---------------------------------------------------------------------------
 // site_settings/*
 // ---------------------------------------------------------------------------
@@ -36,7 +52,74 @@ export interface SiteSettingsGeneral {
     linkedin: string;
     x: string;
   };
+  // Shared closing-banner CTA reused verbatim across Home, Company, and
+  // other pages — lives here (not per-page) so it only needs editing once.
+  ctaTitleZh: string;
+  ctaTitleEn: string;
+  ctaTitleJp: string;
+  ctaButtonZh: string;
+  ctaButtonEn: string;
+  ctaButtonJp: string;
+  // Raw CSS injected site-wide via a <style> tag — an escape hatch for
+  // developers to make small visual tweaks without a code deploy. Empty by
+  // default; only ever touched by someone who reads the admin's warning.
+  customCss: string;
   updatedAt?: Timestamp;
+}
+
+export interface HomeStat {
+  valueZh: string;
+  valueEn: string;
+  valueJp: string;
+}
+
+export interface HomeBizItem {
+  titleZh: string;
+  titleEn: string;
+  titleJp: string;
+  descZh: string;
+  descEn: string;
+  descJp: string;
+  item1Zh: string;
+  item1En: string;
+  item1Jp: string;
+  item2Zh: string;
+  item2En: string;
+  item2Jp: string;
+  item3Zh: string;
+  item3En: string;
+  item3Jp: string;
+}
+
+export interface HomePerspectiveItem {
+  titleZh: string;
+  titleEn: string;
+  titleJp: string;
+  descZh: string;
+  descEn: string;
+  descJp: string;
+}
+
+export interface HomeProcessStep {
+  titleZh: string;
+  titleEn: string;
+  titleJp: string;
+  descZh: string;
+  descEn: string;
+  descJp: string;
+}
+
+export interface HomeRepresentative {
+  nameZh: string;
+  nameEn: string;
+  nameJp: string;
+  roleZh: string;
+  roleEn: string;
+  roleJp: string;
+  descZh: string;
+  descEn: string;
+  descJp: string;
+  image: string;
 }
 
 /** One frame of the homepage hero carousel. */
@@ -51,9 +134,8 @@ export interface HeroSlide {
 
 export interface SiteSettingsHome {
   /**
-   * Hero carousel frames. Supersedes the single `heroImage`, which is kept for
-   * backwards compatibility: when this is empty the hero falls back to
-   * `heroImage`, and then to the images bundled in /public/hero.
+   * Hero carousel frames. Not edited by the current admin (which saves only
+   * `heroImage`), kept so older docs that carry slides still render them.
    */
   heroSlides?: HeroSlide[];
   heroTitleLine1Zh: string;
@@ -69,6 +151,241 @@ export interface SiteSettingsHome {
   primaryCtaZh: string;
   primaryCtaEn: string;
   primaryCtaJp: string;
+  trustStats: HomeStat[];
+  bizTourTitleZh: string;
+  bizTourTitleEn: string;
+  bizTourTitleJp: string;
+  bizTourDescZh: string;
+  bizTourDescEn: string;
+  bizTourDescJp: string;
+  bizTourItems: HomeBizItem[];
+  perspectiveTitleZh: string;
+  perspectiveTitleEn: string;
+  perspectiveTitleJp: string;
+  perspectiveDescZh: string;
+  perspectiveDescEn: string;
+  perspectiveDescJp: string;
+  perspectiveItems: HomePerspectiveItem[];
+  processTitleZh: string;
+  processTitleEn: string;
+  processTitleJp: string;
+  processDescZh: string;
+  processDescEn: string;
+  processDescJp: string;
+  processFlowSteps: HomeProcessStep[];
+  advisorTitleZh: string;
+  advisorTitleEn: string;
+  advisorTitleJp: string;
+  representative: HomeRepresentative;
+  updatedAt?: Timestamp;
+}
+
+export interface SiteSettingsCompany {
+  bannerTagZh: string;
+  bannerTagEn: string;
+  bannerTagJp: string;
+  bannerH1Zh: string;
+  bannerH1En: string;
+  bannerH1Jp: string;
+  bannerDescZh: string;
+  bannerDescEn: string;
+  bannerDescJp: string;
+  bannerBadgeZh: string;
+  bannerBadgeEn: string;
+  bannerBadgeJp: string;
+  repTagZh: string;
+  repTagEn: string;
+  repTagJp: string;
+  repHeadlineZh: string;
+  repHeadlineEn: string;
+  repHeadlineJp: string;
+  repP1Zh: string;
+  repP1En: string;
+  repP1Jp: string;
+  repP2Zh: string;
+  repP2En: string;
+  repP2Jp: string;
+  repNameRoleZh: string;
+  repNameRoleEn: string;
+  repNameRoleJp: string;
+  overviewTagZh: string;
+  overviewTagEn: string;
+  overviewTagJp: string;
+  overviewTitleZh: string;
+  overviewTitleEn: string;
+  overviewTitleJp: string;
+  quoteZh: string;
+  quoteEn: string;
+  quoteJp: string;
+  quoteDescZh: string;
+  quoteDescEn: string;
+  quoteDescJp: string;
+  visitTagZh: string;
+  visitTagEn: string;
+  visitTagJp: string;
+  visitTitleZh: string;
+  visitTitleEn: string;
+  visitTitleJp: string;
+  updatedAt?: Timestamp;
+}
+
+export interface SiteSettingsContact {
+  bannerTagZh: string;
+  bannerTagEn: string;
+  bannerTagJp: string;
+  bannerH1Zh: string;
+  bannerH1En: string;
+  bannerH1Jp: string;
+  bannerDescZh: string;
+  bannerDescEn: string;
+  bannerDescJp: string;
+  quoteZh: string;
+  quoteEn: string;
+  quoteJp: string;
+  updatedAt?: Timestamp;
+}
+
+export interface SiteSettingsNews {
+  bannerTagZh: string;
+  bannerTagEn: string;
+  bannerTagJp: string;
+  bannerH1Zh: string;
+  bannerH1En: string;
+  bannerH1Jp: string;
+  bannerDescZh: string;
+  bannerDescEn: string;
+  bannerDescJp: string;
+  categoryTitleZh: string;
+  categoryTitleEn: string;
+  categoryTitleJp: string;
+  updatedAt?: Timestamp;
+}
+
+export interface SiteSettingsCases {
+  bannerTagZh: string;
+  bannerTagEn: string;
+  bannerTagJp: string;
+  bannerH1Zh: string;
+  bannerH1En: string;
+  bannerH1Jp: string;
+  bannerDescZh: string;
+  bannerDescEn: string;
+  bannerDescJp: string;
+  updatedAt?: Timestamp;
+}
+
+export interface ServicesPhaseItem {
+  titleZh: string;
+  titleEn: string;
+  titleJp: string;
+  descZh: string;
+  descEn: string;
+  descJp: string;
+  item1Zh: string;
+  item1En: string;
+  item1Jp: string;
+  item2Zh: string;
+  item2En: string;
+  item2Jp: string;
+  item3Zh: string;
+  item3En: string;
+  item3Jp: string;
+}
+
+export interface ServicesStep {
+  titleZh: string;
+  titleEn: string;
+  titleJp: string;
+  descZh: string;
+  descEn: string;
+  descJp: string;
+}
+
+export interface SiteSettingsServices {
+  bannerTagZh: string;
+  bannerTagEn: string;
+  bannerTagJp: string;
+  bannerH1Zh: string;
+  bannerH1En: string;
+  bannerH1Jp: string;
+  bannerDescZh: string;
+  bannerDescEn: string;
+  bannerDescJp: string;
+  flowTitleZh: string;
+  flowTitleEn: string;
+  flowTitleJp: string;
+  flowDescZh: string;
+  flowDescEn: string;
+  flowDescJp: string;
+  transactionPhases: ServicesPhaseItem[];
+  stepsTitleZh: string;
+  stepsTitleEn: string;
+  stepsTitleJp: string;
+  acquisitionSteps: ServicesStep[];
+  taxesTitleZh: string;
+  taxesTitleEn: string;
+  taxesTitleJp: string;
+  buyLabelZh: string;
+  buyLabelEn: string;
+  buyLabelJp: string;
+  buyValZh: string;
+  buyValEn: string;
+  buyValJp: string;
+  holdLabelZh: string;
+  holdLabelEn: string;
+  holdLabelJp: string;
+  holdValZh: string;
+  holdValEn: string;
+  holdValJp: string;
+  sellLabelZh: string;
+  sellLabelEn: string;
+  sellLabelJp: string;
+  sellValZh: string;
+  sellValEn: string;
+  sellValJp: string;
+  mgmtTitleZh: string;
+  mgmtTitleEn: string;
+  mgmtTitleJp: string;
+  mgmtDescZh: string;
+  mgmtDescEn: string;
+  mgmtDescJp: string;
+  mgmtItem1Zh: string;
+  mgmtItem1En: string;
+  mgmtItem1Jp: string;
+  mgmtItem2Zh: string;
+  mgmtItem2En: string;
+  mgmtItem2Jp: string;
+  mgmtItem3Zh: string;
+  mgmtItem3En: string;
+  mgmtItem3Jp: string;
+  mgmtItem4Zh: string;
+  mgmtItem4En: string;
+  mgmtItem4Jp: string;
+  ctaTitleZh: string;
+  ctaTitleEn: string;
+  ctaTitleJp: string;
+  ctaBtnZh: string;
+  ctaBtnEn: string;
+  ctaBtnJp: string;
+  updatedAt?: Timestamp;
+}
+
+export interface SiteSettingsProperties {
+  bannerTagZh: string;
+  bannerTagEn: string;
+  bannerTagJp: string;
+  bannerH1Zh: string;
+  bannerH1En: string;
+  bannerH1Jp: string;
+  bannerDescZh: string;
+  bannerDescEn: string;
+  bannerDescJp: string;
+  ctaTitleZh: string;
+  ctaTitleEn: string;
+  ctaTitleJp: string;
+  ctaButtonZh: string;
+  ctaButtonEn: string;
+  ctaButtonJp: string;
   updatedAt?: Timestamp;
 }
 
@@ -103,11 +420,22 @@ export interface NewsContentBody {
   summary: string;
 }
 
+// References a CategoryItem.key from site_settings/categories.news — an
+// admin-managed list rather than a fixed enum, so categories can be added,
+// relabeled, or removed without a code change.
+export type NewsCategory = string;
+
 export interface NewsArticleDoc {
   slug: string;
-  categoryZh: string;
-  categoryEn: string;
-  categoryJp: string;
+  category?: NewsCategory;
+  /**
+   * Pre-category-key labels. Documents seeded before the admin switched to
+   * `category` keys still carry these instead; the public site falls back to
+   * them (see lib/categories.ts) until the doc is re-saved in the admin.
+   */
+  categoryZh?: string;
+  categoryEn?: string;
+  categoryJp?: string;
   titleZh: string;
   titleEn: string;
   titleJp: string;
@@ -141,11 +469,21 @@ export interface CaseDetailsBody {
   outcome: string;
 }
 
+// References a CategoryItem.key from site_settings/categories.cases — same
+// rationale as NewsCategory above.
+export type CaseCategory = string;
+
 export interface CaseArticleDoc {
   slug: string;
-  categoryZh: string;
-  categoryEn: string;
-  categoryJp: string;
+  category?: CaseCategory;
+  /**
+   * Pre-category-key labels. Documents seeded before the admin switched to
+   * `category` keys still carry these instead; the public site falls back to
+   * them (see lib/categories.ts) until the doc is re-saved in the admin.
+   */
+  categoryZh?: string;
+  categoryEn?: string;
+  categoryJp?: string;
   titleZh: string;
   titleEn: string;
   titleJp: string;

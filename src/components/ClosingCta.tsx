@@ -2,24 +2,32 @@ import type { ReactNode } from "react";
 import { Link } from "wouter";
 import { motion } from "motion/react";
 import { useLanguage } from "../lib/LanguageContext";
-import { pickLang } from "../lib/utils";
+import { useGeneral } from "../lib/useGeneral";
+import { tr } from "../lib/useSiteSettings";
 
 /**
  * The closing call to action shared by every page, matching the homepage:
  * a full-bleed photograph with a solid brand panel laid over it, rather than
  * type sitting on a darkened image.
+ *
+ * Title and button default to the shared CTA edited under the admin's
+ * 公司基本資料 tab; pages with their own CTA fields (Services, Properties)
+ * pass those instead.
  */
 export function ClosingCta({
   title,
+  buttonLabel,
   image = "/hero/hero-1-1920.jpg",
   secondary,
 }: {
   title?: ReactNode;
+  buttonLabel?: ReactNode;
   image?: string;
   /** Optional second button, e.g. back to a listing. */
   secondary?: { label: ReactNode; href: string };
 }) {
-  const { t, lang, localePath } = useLanguage();
+  const { lang, localePath } = useLanguage();
+  const general = useGeneral();
 
   return (
     <section className="relative w-full">
@@ -52,14 +60,14 @@ export function ClosingCta({
             className="max-w-xl rounded-3xl bg-brand-500 p-8 shadow-[0_28px_70px_-40px_rgba(21,18,14,0.6)] md:p-12"
           >
             <h2 className="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-primary">
-              {title ?? t("cta.title")}
+              {title || tr(general, "ctaTitle", lang)}
             </h2>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
                 href={localePath("/contact")}
                 className="rounded-lg bg-primary px-8 py-4 font-label-caps text-label-caps uppercase tracking-widest text-on-primary transition-colors hover:bg-surface hover:text-primary"
               >
-                {pickLang(lang, "預約諮詢", "Book consultation", "相談を予約する")}
+                {buttonLabel || tr(general, "ctaButton", lang)}
               </Link>
               {secondary && (
                 <Link

@@ -5,11 +5,15 @@ import { motion } from "motion/react";
 import { SocialLinks } from "../components/SocialLinks";
 import { useSocialLinks } from "../lib/useSocialLinks";
 import { pickLang } from "../lib/utils";
+import { useGeneral } from "../lib/useGeneral";
+import { useContactSettings, tr } from "../lib/useSiteSettings";
 import { submitContactForm, RateLimitedError, SpamRejectedError } from "../lib/content/forms";
 
 export function Contact() {
   const { t, lang } = useLanguage();
   const socialLinks = useSocialLinks();
+  const general = useGeneral();
+  const contact = useContactSettings();
   const [formData, setFormData] = useState({
     company: "",
     name: "",
@@ -93,9 +97,9 @@ export function Contact() {
     <div className="flex flex-col w-full bg-background relative overflow-hidden">
       <PageBanner
         image="https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=2000&q=85"
-        kicker={t("contact.banner.tag")}
-        title={t("contact.banner.h1")}
-        desc={t("contact.banner.desc")}
+        kicker={tr(contact, "bannerTag", lang)}
+        title={tr(contact, "bannerH1", lang)}
+        desc={tr(contact, "bannerDesc", lang)}
       />
 
       {/* CONTACT FORM & INFO SECTION */}
@@ -293,7 +297,7 @@ export function Contact() {
                   {t("contact.info.company_name_label")}
                 </span>
                 <p className="font-body-md text-primary font-medium text-lg whitespace-pre-line leading-snug mt-1">
-                  {t("contact.info.company_name_val")}
+                  {tr(general, "companyName", lang)}
                 </p>
               </div>
 
@@ -304,7 +308,7 @@ export function Contact() {
                   {t("contact.info.hq_label")}
                 </span>
                 <p className="font-body-md text-primary whitespace-pre-line text-base leading-relaxed mt-1">
-                  {t("contact.info.hq_val")}
+                  {tr(general, "address", lang)}
                 </p>
               </div>
 
@@ -315,7 +319,7 @@ export function Contact() {
                   {t("contact.info.license_label")}
                 </span>
                 <p className="font-body-md text-primary text-base mt-1">
-                  {t("contact.info.license_val")}
+                  {tr(general, "license", lang)}
                 </p>
               </div>
 
@@ -325,21 +329,29 @@ export function Contact() {
                   <span className="material-symbols-outlined text-sm">mail</span>
                   {t("contact.info.contact_label")}
                 </span>
-                <p className="font-body-md text-primary text-base mt-1">
-                  {t("contact.info.contact_val")}
-                </p>
+                <a
+                  href={`mailto:${general.email}`}
+                  className="font-body-md text-primary text-base mt-1 underline-offset-4 hover:text-brand-600 hover:underline"
+                >
+                  {general.email}
+                </a>
               </div>
 
-              {/* Phone */}
+              {/* Phone — hidden until one is set under 公司基本資料 */}
+              {general.phone.trim() && (
               <div className="flex flex-col gap-1 border-b border-primary/20 pb-5">
                 <span className="font-label-caps text-brand-500 tracking-widest uppercase text-xs flex items-center gap-2">
                   <span className="material-symbols-outlined text-sm">call</span>
                   {t("contact.info.phone_label")}
                 </span>
-                <p className="font-body-md text-primary text-base mt-1">
-                  {t("contact.info.phone_val")}
-                </p>
+                <a
+                  href={`tel:${general.phone.replace(/[^d+]/g, "")}`}
+                  className="font-body-md text-primary text-base mt-1 underline-offset-4 hover:text-brand-600 hover:underline"
+                >
+                  {general.phone}
+                </a>
               </div>
+              )}
 
               {/* Hours */}
               <div className="flex flex-col gap-1">
@@ -348,13 +360,13 @@ export function Contact() {
                   {t("contact.info.hours_label")}
                 </span>
                 <p className="font-body-md text-primary text-sm whitespace-pre-line leading-relaxed mt-1">
-                  {t("contact.info.hours_val")}
+                  {tr(general, "hours", lang)}
                 </p>
               </div>
             </div>
 
             <div className="rounded-2xl border-l-4 border-brand-500 bg-surface-warm-deep p-8 transition-transform duration-300 hover:-translate-y-1">
-              <p className="font-body-md italic leading-relaxed text-primary">{t("contact.quote")}</p>
+              <p className="font-body-md italic leading-relaxed text-primary">{tr(contact, "quote", lang)}</p>
               {socialLinks.some((s) => s.url) && (
                 <div className="mt-6 flex flex-col gap-3 border-t border-outline-variant pt-6">
                   <span className="font-label-caps text-[11px] uppercase tracking-widest text-on-surface-variant">

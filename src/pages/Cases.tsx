@@ -9,9 +9,13 @@ import type { CaseArticle } from "../types/content";
 import { ArrowChip } from "../components/ArrowChip";
 import { PriceBlock } from "../components/PriceBlock";
 import { pickLang } from "../lib/utils";
+import { useCategories, useCasesSettings, tr } from "../lib/useSiteSettings";
+import { resolveCategory, categoryLabel } from "../lib/categories";
 
 export function Cases() {
-  const { t, lang, localePath } = useLanguage();
+  const { lang, localePath } = useLanguage();
+  const settings = useCasesSettings();
+  const categoryList = useCategories().cases;
   const [activeCategory, setActiveCategory] = useState<string>("ALL");
   const [currentPage, setCurrentPage] = useState<number>(1);
   const itemsPerPage = 9;
@@ -41,14 +45,10 @@ export function Cases() {
     };
   }, []);
 
-  // Categories list
+  // Admin-managed category list (site_settings/categories), plus "all".
   const categories = [
     { key: "ALL", labelZh: "全部案例", labelEn: "All Cases", labelJp: "すべての実績" },
-    { key: "RESIDENTIAL", labelZh: "住宅不動產", labelEn: "Residential", labelJp: "住宅用不動産" },
-    { key: "COMMERCIAL", labelZh: "商業與收益型", labelEn: "Commercial", labelJp: "商業・収益不動産" },
-    { key: "DEVELOPMENT", labelZh: "土地開發與自建", labelEn: "Development", labelJp: "土地開発・注文建築" },
-    { key: "RENOVATION", labelZh: "收購再販與翻新", labelEn: "Renovation & Resale", labelJp: "買取再販・リノベーション" },
-    { key: "HOSPITALITY", labelZh: "住宿設施營運", labelEn: "Hospitality", labelJp: "宿泊施設運営" },
+    ...categoryList,
   ];
 
   // Category change handler (resets page)
@@ -57,16 +57,10 @@ export function Cases() {
     setCurrentPage(1);
   };
 
-  // Filtered cases
-  const filteredCases = casesData.filter((item) => {
-    if (activeCategory === "ALL") return true;
-    if (activeCategory === "RESIDENTIAL") return item.categoryEn === "Residential";
-    if (activeCategory === "COMMERCIAL") return item.categoryEn === "Commercial";
-    if (activeCategory === "DEVELOPMENT") return item.categoryEn === "Development";
-    if (activeCategory === "RENOVATION") return item.categoryEn === "Renovation & Resale";
-    if (activeCategory === "HOSPITALITY") return item.categoryEn === "Hospitality";
-    return true;
-  });
+  // Filtered cases — legacy docs without a category key are matched by label.
+  const filteredCases = casesData.filter(
+    (item) => activeCategory === "ALL" || resolveCategory(item, categoryList)?.key === activeCategory
+  );
 
   // Calculate dynamic total pages
   const totalPages = Math.ceil(filteredCases.length / itemsPerPage) || 1;
@@ -86,9 +80,9 @@ export function Cases() {
     <div className="flex flex-col w-full font-body-md text-on-surface bg-background">
       <PageBanner
         image="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=2000&q=85"
-        kicker={t("cases.banner.tag")}
-        title={t("cases.banner.h1")}
-        desc={t("cases.banner.desc")}
+        kicker={tr(settings, "bannerTag", lang)}
+        title={tr(settings, "bannerH1", lang)}
+        desc={tr(settings, "bannerDesc", lang)}
       />
 
       {/* FILTER BUTTONS & CASES GRID */}
@@ -144,7 +138,7 @@ export function Cases() {
             {currentCases.map((item) => {
               const title = pickLang(lang, item.titleZh, item.titleEn, item.titleJp);
               const desc = pickLang(lang, item.descZh, item.descEn, item.descJp);
-              const category = pickLang(lang, item.categoryZh, item.categoryEn, item.categoryJp);
+              const category = categoryLabel(resolveCategory(item, categoryList), lang);
               const location = pickLang(lang, item.locationZh, item.locationEn, item.locationJp);
 
               return (
@@ -254,7 +248,7 @@ export function Cases() {
         </div>
       </section>
 
-      <ClosingCta title={t("cases.cta.title")} />
+      <ClosingCta />
     </div>
   );
 }

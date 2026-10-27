@@ -18,8 +18,7 @@ import { NewsDetail } from "./pages/NewsDetail";
 import { Contact } from "./pages/Contact";
 import { LanguageProvider } from "./lib/LanguageContext";
 import { CurrencyProvider } from "./lib/CurrencyContext";
-import { AuthProvider } from "./lib/AuthContext";
-import { AdminRoutes } from "./admin/AdminRoutes";
+import { CustomCss } from "./components/CustomCss";
 
 function ScrollToTop() {
   const [pathname] = useLocation();
@@ -34,22 +33,8 @@ function ScrollToTop() {
 }
 
 export default function App() {
-  const [location] = useLocation();
-
-  // /admin/* is a separate, single-language (zh) internal tool: no locale
-  // prefix, no marketing chrome (Header/Footer/FloatingSocial), so it must
-  // sit outside <LanguageProvider> — that provider force-redirects any
-  // non-locale-prefixed path, which would otherwise break /admin routes.
-  if (location.startsWith("/admin")) {
-    return (
-      <MotionConfig reducedMotion="user">
-        <AuthProvider>
-          <AdminRoutes />
-        </AuthProvider>
-      </MotionConfig>
-    );
-  }
-
+  // The CMS lives in its own app (yellow-house-admin); vercel.json redirects
+  // /admin/* there, so this app only serves the public, locale-prefixed site.
   return (
     <MotionConfig reducedMotion="user">
       <LanguageProvider>
@@ -57,6 +42,7 @@ export default function App() {
           <div className="flex flex-col min-h-screen">
             <ScrollToTop />
             <SEOManager />
+            <CustomCss />
             <Header />
             <main className="flex-grow">
               <Switch>

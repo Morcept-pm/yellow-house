@@ -8,20 +8,18 @@ import { Kicker } from "../components/Kicker";
 import { listPublishedNews } from "../lib/content/news";
 import type { NewsArticle } from "../types/content";
 import { pickLang } from "../lib/utils";
+import { useCategories, useNewsSettings, tr } from "../lib/useSiteSettings";
+import { resolveCategory, categoryLabel } from "../lib/categories";
 
-const CATEGORIES = [
-  { key: "ALL", en: null, zh: "全部消息", enL: "All", jp: "すべて" },
-  { key: "MARKET", en: "Market Insights", zh: "市場動態", enL: "Market", jp: "市場" },
-  { key: "GUIDE", en: "Practical Guide", zh: "實務指南", enL: "Guide", jp: "実務ガイド" },
-  { key: "MGMT", en: "Asset Management", zh: "管理實務", enL: "Management", jp: "資産管理" },
-  { key: "REG", en: "Regulations", zh: "法規政策", enL: "Regulations", jp: "法規制" },
-] as const;
+const ALL = "ALL";
 
 const rise = { hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0 } };
 
 export function News() {
-  const { t, lang, localePath } = useLanguage();
-  const [category, setCategory] = useState<string>("ALL");
+  const { lang, localePath } = useLanguage();
+  const settings = useNewsSettings();
+  const categoryList = useCategories().news;
+  const [category, setCategory] = useState<string>(ALL);
   const [newsData, setNewsData] = useState<NewsArticle[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -42,8 +40,17 @@ export function News() {
     };
   }, []);
 
-  const activeEn = CATEGORIES.find((c) => c.key === category)?.en ?? null;
-  const filtered = newsData.filter((item) => !activeEn || item.categoryEn === activeEn);
+  // Category keys come from the admin-managed list; legacy docs are matched by label.
+  const articles = newsData.map((item) => ({ item, cat: resolveCategory(item, categoryList) }));
+  const tabs = [
+    { key: ALL, label: pickLang(lang, "全部消息", "All", "すべて"), count: articles.length },
+    ...categoryList.map((c) => ({
+      key: c.key,
+      label: categoryLabel(c, lang),
+      count: articles.filter((a) => a.cat?.key === c.key).length,
+    })),
+  ];
+  const filtered = articles.filter((a) => category === ALL || a.cat?.key === category);
 
   const emptyMessage = loading
     ? pickLang(lang, "載入中⋯", "Loading…", "読み込み中…")
@@ -57,9 +64,9 @@ export function News() {
     <div className="flex w-full flex-col overflow-x-hidden bg-surface font-body-md text-on-surface">
       <PageBanner
         image="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=2000&q=85"
-        kicker={t("news.banner.tag")}
-        title={t("news.banner.h1")}
-        desc={t("news.banner.desc")}
+        kicker={tr(settings, "bannerTag", lang)}
+        title={tr(settings, "bannerH1", lang)}
+        desc={tr(settings, "bannerDesc", lang)}
       />
 
       <section className="w-full px-margin-mobile py-section md:px-margin-desktop">
@@ -69,14 +76,12 @@ export function News() {
             <div className="lg:sticky lg:top-28 flex flex-col gap-5">
               <div className="flex flex-col gap-2">
                 <Kicker>Category</Kicker>
-                <h2 className="font-headline-md text-lg text-primary">{t("news.category.title")}</h2>
+                <h2 className="font-headline-md text-lg text-primary">{tr(settings, "categoryTitle", lang)}</h2>
               </div>
 
-              <nav className="flex flex-wrap gap-2 lg:flex-col lg:items-start lg:gap-1.5" aria-label={t("news.category.title")}>
-                {CATEGORIES.map((cat) => {
+              <nav className="flex flex-wrap gap-2 lg:flex-col lg:items-start lg:gap-1.5" aria-label={tr(settings, "categoryTitle", lang)}>
+                {tabs.map((cat) => {
                   const active = category === cat.key;
-                  const count =
-                    cat.en === null ? newsData.length : newsData.filter((n) => n.categoryEn === cat.en).length;
                   return (
                     <button
                       key={cat.key}
@@ -88,8 +93,8 @@ export function News() {
                           : "bg-surface-warm text-on-surface-variant hover:bg-surface-warm-deep hover:text-primary"
                       }`}
                     >
-                      <span>{pickLang(lang, cat.zh, cat.enL, cat.jp)}</span>
-                      <span className={active ? "text-primary/70" : "text-on-surface-variant/60"}>{count}</span>
+                      <span>{cat.label}</span>
+                      <span className={active ? "text-primary/70" : "text-on-surface-variant/60"}>{cat.count}</span>
                     </button>
                   );
                 })}
@@ -109,7 +114,7 @@ export function News() {
                 variants={{ hidden: {}, visible: { transition: { staggerChildren: 0.06 } } }}
                 className="flex flex-col"
               >
-                {filtered.map((item) => (
+                {filtered.map(({ item, cat }) => (
                   <motion.li
                     key={item.id}
                     variants={rise}
@@ -132,7 +137,7 @@ export function News() {
 
                       <div className="flex min-w-0 flex-1 flex-col gap-2">
                         <div className="flex flex-wrap items-center gap-x-3 gap-y-1 font-label-caps text-[11px] uppercase tracking-[0.16em] text-brand-600">
-                          <span>{pickLang(lang, item.categoryZh, item.categoryEn, item.categoryJp)}</span>
+                          <span>{categoryLabel(cat, lang)}</span>
                           <span className="h-1 w-1 rounded-full bg-brand-400" />
                           <span className="normal-case tracking-normal text-on-surface-variant">
                             {pickLang(lang, item.readTimeZh, item.readTimeEn, item.readTimeJp)}
@@ -158,7 +163,7 @@ export function News() {
         </div>
       </section>
 
-      <ClosingCta title={t("cta.title")} />
+      <ClosingCta />
     </div>
   );
 }

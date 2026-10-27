@@ -2,8 +2,15 @@ import { useEffect, useState } from "react";
 import { watchGeneral, DEFAULT_GENERAL } from "./content/siteSettings";
 import { SOCIAL_KEY_ORDER, SOCIAL_LABELS, type SocialLinkConfig } from "./socialLinks";
 
+// "#" was the old seed placeholder; the admin tells editors a blank link hides
+// the icon, so treat the placeholder as blank too instead of rendering a dead link.
+const usableUrl = (url: string | undefined) => {
+  const trimmed = (url ?? "").trim();
+  return trimmed === "#" ? "" : trimmed;
+};
+
 const toLinks = (social: Record<string, string> | undefined) =>
-  SOCIAL_KEY_ORDER.map((key) => ({ key, label: SOCIAL_LABELS[key], url: social?.[key] ?? "" }));
+  SOCIAL_KEY_ORDER.map((key) => ({ key, label: SOCIAL_LABELS[key], url: usableUrl(social?.[key]) }));
 
 /** Live-updating social link list, sourced from site_settings/general (admin-editable). */
 export function useSocialLinks(): SocialLinkConfig[] {

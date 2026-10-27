@@ -6,6 +6,7 @@ import { PageBanner } from "../components/PageBanner";
 import { ClosingCta } from "../components/ClosingCta";
 import { Kicker } from "../components/Kicker";
 import { pickLang } from "../lib/utils";
+import { useHomeSettings, useServicesSettings, tr } from "../lib/useSiteSettings";
 
 /**
  * The five core business lines. Each carries its own photograph — the previous
@@ -45,6 +46,13 @@ const inView = { once: true, margin: "-70px" } as const;
 
 export function Services() {
   const { t, lang, localePath } = useLanguage();
+  const home = useHomeSettings();
+  const services = useServicesSettings();
+  const sv = (base: string) => tr(services, base, lang);
+  const biz = (i: number, field: string, fallbackKey: string) => {
+    const entry = home.bizTourItems?.[i];
+    return (entry && tr(entry, field, lang)) || t(fallbackKey);
+  };
 
   useEffect(() => {
     document.title = pickLang(
@@ -55,72 +63,38 @@ export function Services() {
     );
   }, [lang]);
 
-  const acquisitionSteps =
-    lang === "zh"
-      ? [
-          { title: "初步諮詢與需求確認", desc: "深入了解您的購置目的、預算範圍及特定偏好，為後續物件篩選奠定基礎。" },
-          { title: "物件提案與篩選", desc: "提供符合條件之精選物件清單，包含獨家未公開案源，並進行優劣勢分析。" },
-          { title: "現場看屋與環境勘查", desc: "安排專人陪同視察物件實況，檢視周邊環境機能與建築結構品質。" },
-          { title: "價格協商與條件斡旋", desc: "代表買方與賣方進行價格及交易條件交涉，確保客戶利益最大化。" },
-          { title: "重要事項說明與簽約", desc: "由專業宅地建物取引士進行詳盡的產權及法規說明，確認無誤後簽署買賣契約。" },
-          { title: "貸款協助與資金規劃", desc: "協助外籍人士對接合適之金融機構辦理貸款，並規劃跨國匯款流程。" },
-          { title: "交屋結算與產權移轉", desc: "會同司法書士辦理尾款結算及所有權移轉登記，正式交付鑰匙與產權文件。" },
-        ]
-      : lang === "jp"
-      ? [
-          { title: "初回相談とご要望の確認", desc: "ご購入の目的、ご予算、具体的なご希望を丁寧にヒアリングし、後続の物件選定の土台を構築します。" },
-          { title: "物件のご提案と絞り込み", desc: "未公開物件を含む厳選リストをご提供し、それぞれのメリット・デメリットを分析いたします。" },
-          { title: "内見と周辺環境の確認", desc: "専任担当が同行し、物件の実際の状態や周辺環境、建物の構造品質を確認します。" },
-          { title: "価格交渉と条件調整", desc: "買主様の代理として売主様と価格及び取引条件を交渉し、お客様の利益を最大化します。" },
-          { title: "重要事項説明とご契約", desc: "専門の宅地建物取引士が権利関係及び法令に関する詳細な説明を行い、ご納得いただいた上でご契約を締結します。" },
-          { title: "融資サポートと資金計画", desc: "海外のお客様に適した金融機関との連携を支援し、国際送金の手続きを計画します。" },
-          { title: "決済と所有権移転", desc: "司法書士と連携して残代金の決済及び所有権移転登記を行い、鍵と権利書類を正式にお引き渡しします。" },
-        ]
-      : [
-          { title: "Initial Consultation & Goal Alignment", desc: "Deep dive into your purchase purpose, budget structure, and timeline to form a strategic baseline." },
-          { title: "Curated Proposal & Off-Market Sourcing", desc: "Shortlist prime and exclusive off-market properties with exhaustive comparative analysis." },
-          { title: "Private Viewings & Site Inspection", desc: "Coordinate discreet on-site or high-definition live virtual tours covering architectural build and neighborhood." },
-          { title: "Price Negotiation & Terms Structuring", desc: "Actively advocate for your financial and contract terms to maximize value and security." },
-          { title: "Explanation of Important Matters & Contract", desc: "Conducted by licensed Real Estate Transaction Specialists (宅建士) before formal signing." },
-          { title: "Cross-Border Financing & Fund Flow", desc: "Introduce leading banks for non-resident mortgages and structure compliant capital routing." },
-          { title: "Final Settlement & Title Transfer", desc: "Complete deed transfer and title registration with licensed judicial scriveners, followed by key handover." },
-        ];
+  // Copy is admin-editable: the five businesses come from the homepage's
+  // 主要業務範疇 list (site_settings/home), everything else from
+  // site_settings/services. Icons and phase numbers stay in code.
+  const acquisitionSteps = services.acquisitionSteps.map((step) => ({
+    title: tr(step, "title", lang),
+    desc: tr(step, "desc", lang),
+  }));
 
-  const transactionPhases =
-    lang === "zh"
-      ? [
-          { phase: "PHASE 01", icon: "account_balance_wallet", title: "準備階段", desc: "資金規劃與文件審核，確保買賣資格與跨境資金流暢到位。", items: ["資金證明備妥", "護照與身分認證文件", "印鑑證明申請"] },
-          { phase: "PHASE 02", icon: "description", title: "執行階段", desc: "出具正式買付證明書，代表買方進行價格條件斡旋與簽約期程確認。", items: ["提出買付證明書", "賣方承諾與條件合意", "安排簽約日程"] },
-          { phase: "PHASE 03", icon: "draw", title: "契約階段", desc: "宅建士重要事項說明與公證契約締結，確保法令產權無虞。", items: ["繳交訂金 (房價5-10%)", "簽署買賣契約書", "印花稅票貼付"] },
-          { phase: "PHASE 04", icon: "key", title: "結算階段", desc: "司法書士共同會審完成尾款清算、稅費繳交與所有權移轉登記。", items: ["支付尾款與各項稅費", "辦理登記手續", "房屋點交與鑰匙交付"] },
-        ]
-      : lang === "jp"
-      ? [
-          { phase: "PHASE 01", icon: "account_balance_wallet", title: "準備段階", desc: "資金計画と書類確認を行い、取引資格と国際送金をスムーズに整えます。", items: ["資金証明のご用意", "パスポート及び本人確認書類", "印鑑証明の取得"] },
-          { phase: "PHASE 02", icon: "description", title: "実行段階", desc: "正式な買付証明書を発行し、買主様の代理として価格交渉及び契約スケジュールを調整します。", items: ["買付証明書の提出", "売主様の承諾と条件合意", "契約日程の調整"] },
-          { phase: "PHASE 03", icon: "draw", title: "契約段階", desc: "宅地建物取引士による重要事項説明と契約締結を行い、法的な権利関係を確実にします。", items: ["手付金のお支払い（物件価格の5〜10%）", "売買契約書へのご署名", "印紙税の貼付"] },
-          { phase: "PHASE 04", icon: "key", title: "決済段階", desc: "司法書士立会いのもと残代金の決済、諸費用のお支払い、所有権移転登記を行います。", items: ["残代金及び諸費用のお支払い", "登記手続き", "鍵の引き渡し"] },
-        ]
-      : [
-          { phase: "PHASE 01", icon: "account_balance_wallet", title: "Preparation", desc: "Capital planning, KYC verification, and notarized identity documentation readiness.", items: ["Proof of funds readiness", "Passport & notarized affidavit", "Affidavit of seal verification"] },
-          { phase: "PHASE 02", icon: "description", title: "Execution", desc: "Issuing formal Letter of Intent, price negotiation, and timeline alignment with vendor.", items: ["Letter of Intent (買付證明書)", "Terms alignment with vendor", "Contract scheduling"] },
-          { phase: "PHASE 03", icon: "draw", title: "Contract", desc: "Statutory explanation of important matters by licensed specialist and agreement execution.", items: ["Deposit payment (typically 5-10%)", "Purchase agreement execution", "Stamp duty tax handling"] },
-          { phase: "PHASE 04", icon: "key", title: "Settlement", desc: "Final balance settlement, tax payment, and title transfer registration with judicial scriveners.", items: ["Balance & closing costs", "Title registration", "Handover & key delivery"] },
-        ];
+  const PHASE_ICONS = ["account_balance_wallet", "description", "draw", "key"];
+  const transactionPhases = services.transactionPhases.map((p, i) => ({
+    phase: `PHASE ${String(i + 1).padStart(2, "0")}`,
+    icon: PHASE_ICONS[i] ?? "check_circle",
+    title: tr(p, "title", lang),
+    desc: tr(p, "desc", lang),
+    items: [tr(p, "item1", lang), tr(p, "item2", lang), tr(p, "item3", lang)].filter(Boolean),
+  }));
 
   const taxes = [
-    { icon: "shopping_cart", label: t("services.taxes.buy_label"), val: t("services.taxes.buy_val") },
-    { icon: "home_work", label: t("services.taxes.hold_label"), val: t("services.taxes.hold_val") },
-    { icon: "sell", label: t("services.taxes.sell_label"), val: t("services.taxes.sell_val") },
+    { icon: "shopping_cart", label: sv("buyLabel"), val: sv("buyVal") },
+    { icon: "home_work", label: sv("holdLabel"), val: sv("holdVal") },
+    { icon: "sell", label: sv("sellLabel"), val: sv("sellVal") },
   ];
+
+  const mgmtItems = [sv("mgmtItem1"), sv("mgmtItem2"), sv("mgmtItem3"), sv("mgmtItem4")].filter(Boolean);
 
   return (
     <div className="flex w-full flex-col overflow-x-hidden bg-surface">
       <PageBanner
         image="https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=2000&q=85"
-        kicker={t("services.banner.tag")}
-        title={t("services.banner.h1")}
-        desc={t("services.banner.desc")}
+        kicker={sv("bannerTag")}
+        title={sv("bannerH1")}
+        desc={sv("bannerDesc")}
       />
 
       {/* ══ 五大業務 — every service gets its own full-width image row ══════ */}
@@ -128,7 +102,7 @@ export function Services() {
         <div className="content-col flex flex-col gap-4">
           <Kicker>{t("home.services.tag")}</Kicker>
           <h2 className="max-w-xl font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-primary">
-            {t("home.services.title")}
+            {tr(home, "bizTourTitle", lang) || t("home.services.title")}
           </h2>
         </div>
 
@@ -166,15 +140,15 @@ export function Services() {
                     {t(`${svc.key}.num`)}
                   </span>
                 </div>
-                <h3 className="font-headline-md text-2xl text-primary md:text-[28px]">{t(`${svc.key}.title`)}</h3>
+                <h3 className="font-headline-md text-2xl text-primary md:text-[28px]">{biz(i, "title", `${svc.key}.title`)}</h3>
                 <p className="font-body-md text-body-md leading-relaxed text-on-surface-variant">
-                  {t(`${svc.key}.desc`)}
+                  {biz(i, "desc", `${svc.key}.desc`)}
                 </p>
                 <ul className="mt-1 flex flex-col gap-2.5">
                   {["item1", "item2", "item3"].map((n) => (
                     <li key={n} className="flex items-start gap-2.5 font-body-md text-sm text-primary">
                       <span className="mt-[9px] h-1 w-1 shrink-0 rounded-full bg-brand-500" />
-                      <span>{t(`${svc.key}.${n}`)}</span>
+                      <span>{biz(i, n, `${svc.key}.${n}`)}</span>
                     </li>
                   ))}
                 </ul>
@@ -189,7 +163,7 @@ export function Services() {
         <div className="content-col flex flex-col gap-4">
           <Kicker>{pickLang(lang, "交易流程", "Transaction flow", "取引の流れ")}</Kicker>
           <h2 className="max-w-xl font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-primary">
-            {t("services.flow.title")}
+            {sv("flowTitle")}
           </h2>
         </div>
 
@@ -232,7 +206,7 @@ export function Services() {
         <div className="content-col flex flex-col gap-4">
           <Kicker>{pickLang(lang, "購置流程", "Step by step", "購入ステップ")}</Kicker>
           <h2 className="max-w-xl font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-primary">
-            {t("services.steps.title")}
+            {sv("stepsTitle")}
           </h2>
         </div>
 
@@ -265,7 +239,7 @@ export function Services() {
           <div className="flex flex-col gap-4 lg:col-span-4">
             <Kicker>{pickLang(lang, "費用與稅務", "Costs & taxes", "費用と税金")}</Kicker>
             <h2 className="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-primary">
-              {t("services.taxes.title")}
+              {sv("taxesTitle")}
             </h2>
           </div>
 
@@ -328,16 +302,16 @@ export function Services() {
           >
             <Kicker>{pickLang(lang, "租賃管理", "Leasing & management", "賃貸管理")}</Kicker>
             <h2 className="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-primary">
-              {t("services.mgmt.title")}
+              {sv("mgmtTitle")}
             </h2>
             <p className="font-body-md text-body-md leading-relaxed text-on-surface-variant">
-              {t("services.mgmt.desc")}
+              {sv("mgmtDesc")}
             </p>
             <ul className="mt-1 flex flex-col gap-2.5">
-              {["item1", "item2", "item3", "item4"].map((n) => (
-                <li key={n} className="flex items-start gap-2.5 font-body-md text-sm text-primary">
+              {mgmtItems.map((item) => (
+                <li key={item} className="flex items-start gap-2.5 font-body-md text-sm text-primary">
                   <span className="mt-[9px] h-1 w-1 shrink-0 rounded-full bg-brand-500" />
-                  <span>{t(`services.mgmt.${n}`)}</span>
+                  <span>{item}</span>
                 </li>
               ))}
             </ul>
@@ -354,7 +328,7 @@ export function Services() {
         </div>
       </section>
 
-      <ClosingCta title={t("services.cta.title")} />
+      <ClosingCta title={sv("ctaTitle")} buttonLabel={sv("ctaBtn")} />
     </div>
   );
 }
